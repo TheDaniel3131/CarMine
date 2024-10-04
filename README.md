@@ -11,7 +11,7 @@ Features:
 
 Tech Stack:
 - Backend: ASP.NET Core
-- Frontend: HTML5, CSS3, JavaScript
+- Frontend: HTML, CSS, JavaScript, TypeScript, React, NextJS
 - Database: Amazon RDS / DynamoDB
 - Cloud Services: AWS EC2, S3, Lambda, IoT Core, CloudFront
 - Monitoring: AWS CloudWatch for performance tracking and alerts
