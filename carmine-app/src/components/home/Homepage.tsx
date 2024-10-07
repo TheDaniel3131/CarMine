@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, Car, ShoppingBag, Key, Menu, Zap, Hammer, Users, ChevronRight, Star, Clock, Shield, Facebook, Instagram, Twitter } from 'lucide-react'
+import { Search, Car, ShoppingBag, Key, Menu, Zap, Hammer, Users, ChevronRight, Star, Shield, Facebook, Instagram, Twitter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
