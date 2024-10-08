@@ -64,10 +64,10 @@ export default function CarMine() {
     return (
         <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900'}`}>
             <header className={`border-b ${darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} shadow-sm sticky top-0 z-50`}>
-                <div className="container mx-auto px-4 py-3">
+                <div className="container mx-auto px-4 py-6">
                     <nav className="flex justify-between items-center">
                         <Link href="/" className="flex items-center space-x-2">
-                            <Image src="/placeholder.svg?height=40&width=40" alt="CarMine Logo" width={40} height={40} className={darkMode ? 'invert' : ''} />
+                            <Car className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                             <span className={`text-3xl font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                 CarMine
                             </span>
@@ -113,7 +113,7 @@ export default function CarMine() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-16">
+            <main className="container mx-auto px-4 py-20 md:py-24">
                 <h1 className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${darkMode ? 'bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400' : 'bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600'}`}>
                     Revolutionize Your Car Experience
                 </h1>
@@ -127,13 +127,13 @@ export default function CarMine() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24 py-16">
                     {[
                         { icon: Car, title: "Buy & Sell Cars", description: "Find your dream car or sell your current vehicle with ease. Our advanced matching algorithm ensures the best deals.", action: "Explore Market" },
                         { icon: ShoppingBag, title: "Parts Marketplace", description: "Shop for new and used auto parts from trusted sellers. Verified parts and secure transactions guaranteed.", action: "Browse Parts" },
                         { icon: Key, title: "Car Rentals", description: "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service.", action: "Rent Now" },
                     ].map((item, index) => (
-                        <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300`}>
+                        <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-2xl shadow-xl transform transition-transform duration-500 hover:scale-105`}>
                             <div className="flex justify-center mb-6">
                                 <item.icon className={`w-20 h-20 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                             </div>
@@ -198,7 +198,7 @@ export default function CarMine() {
                     <h2 className="text-4xl font-bold mb-8 text-center">Join the CarMine Community</h2>
                     <p className="text-xl text-center mb-12">Get exclusive deals, automotive news, and connect with fellow car enthusiasts.</p>
                     <div className="flex justify-center">
-                        <Button size="lg" variant="secondary" className={`${darkMode ? 'bg-gray-800 text-blue-400 hover:bg-gray-700' : 'bg-white text-blue-600 hover:bg-gray-100'} font-semibold px-8 py-6 text-xl`}>
+                        <Button size="lg" variant="secondary" className={`${darkMode ? 'bg-gray-800 text-blue-400 hover:bg-gray-950' : 'bg-white text-blue-600 hover:bg-gray-100'} font-semibold px-8 py-6 text-xl`}>
                             Sign Up Now
                         </Button>
                     </div>
