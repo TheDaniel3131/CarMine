@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, Car, ShoppingBag, Key, Menu, Zap, Sun, Moon, Hammer, Users, ChevronRight, Star, Shield, Facebook, Instagram, Twitter } from 'lucide-react'
+import { Search, Car, ShoppingBag, Key, Menu, Zap, Sun, Moon, Hammer, Users, ChevronRight, Star, Shield, Facebook, Instagram, Twitter, MessageCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Progress } from '@/components/ui/progress'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,6 +16,16 @@ import {
 
 export default function CarMine() {
     const [darkMode, setDarkMode] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [progress, setProgress] = useState(0)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false)
+        }, 5000)
+
+        return () => clearTimeout(timer)
+    }, [])
 
     useEffect(() => {
         if (darkMode) {
@@ -25,7 +36,29 @@ export default function CarMine() {
     }, [darkMode])
 
     const toggleDarkMode = () => {
-        setDarkMode(!darkMode)
+        setProgress(0)
+        const interval = setInterval(() => {
+            setProgress(prev => {
+                if (prev >= 100) {
+                    clearInterval(interval)
+                    setDarkMode(!darkMode)
+                    return 100
+                }
+                return prev + 10
+            })
+        }, 50)
+    }
+
+    if (loading) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+                <div className="text-center">
+                    {/* <Image src="/placeholder.svg?height=100&width=100" alt="CarMine Logo" width={100} height={100} className="mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold mb-4">Loading CarMine...</h2> */}
+                    <Loader2 className="w-16 h-16 animate-spin mx-auto" />
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -47,9 +80,14 @@ export default function CarMine() {
                             ))}
                         </div>
                         <div className="flex items-center space-x-4">
-                            <Button variant="ghost" size="icon" onClick={toggleDarkMode} className={darkMode ? 'text-yellow-400' : 'text-gray-600'}>
-                                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                            </Button>
+                            <div className="relative">
+                                <Button variant="ghost" size="icon" onClick={toggleDarkMode} className={darkMode ? 'text-yellow-400' : 'text-gray-600'}>
+                                    {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                                </Button>
+                                {progress > 0 && progress < 100 && (
+                                    <Progress value={progress} className="w-8 h-1 absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
+                                )}
+                            </div>
                             <Button variant="outline" className={`hidden md:inline-flex ${darkMode ? 'border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
                                 Sign In
                             </Button>
@@ -63,7 +101,7 @@ export default function CarMine() {
                                 <DropdownMenuContent align="end" className={`w-48 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     {['Buy', 'Sell', 'Marketplace', 'Rent', 'Sign In'].map((item) => (
                                         <DropdownMenuItem key={item}>
-                                            <Link href={`/${item.toLowerCase().replace(' ', '')}`} className="flex w-full">
+                                            <Link href={`/${item.toLowerCase().replace(' ', '')}`} className={`flex w-full font-semibold ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}>
                                                 {item}
                                             </Link>
                                         </DropdownMenuItem>
@@ -150,7 +188,7 @@ export default function CarMine() {
                         ))}
                     </div>
                     <div className="text-center mt-12">
-                        <Button size="lg" className={`${darkMode ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'} text-white font-semibold px-8 py-6 text-xl`}>
+                        <Button size="lg" className={`${darkMode ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' : 'bg-gradient-to-r from-blue-500  to-purple-600 hover:from-blue-600 hover:to-purple-700'} text-white font-semibold px-8 py-6 text-xl`}>
                             View All Listings <ChevronRight className="w-6 h-6 ml-2" />
                         </Button>
                     </div>
@@ -173,7 +211,7 @@ export default function CarMine() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
                             { name: "John D.", comment: "CarMine made buying my dream car a breeze. Highly recommended!" },
-                            { name: "Sarah M.", comment: "The parts marketplace  saved me time and money. Great selection and prices." },
+                            { name: "Sarah M.", comment: "The parts marketplace saved me time and money. Great selection and prices." },
                             { name: "Mike R.", comment: "Renting through CarMine was smooth and hassle-free. Will use again!" },
                         ].map((testimonial, index) => (
                             <div key={index} className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
@@ -248,6 +286,73 @@ export default function CarMine() {
                     </div>
                 </div>
             </footer>
+
+            <Chatbot darkMode={darkMode} />
         </div>
+    )
+}
+
+type ChatbotProps = {
+    darkMode: boolean;
+};
+
+function Chatbot({ darkMode }: ChatbotProps) {
+    const [isOpen, setIsOpen] = useState(false)
+    const [messages, setMessages] = useState([
+        { text: "Hello! How can I help you today?", sender: "bot" }
+    ])
+    const [input, setInput] = useState("")
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (input.trim()) {
+            setMessages([...messages, { text: input, sender: "user" }])
+            setInput("")
+            // Simulate bot response
+            setTimeout(() => {
+                setMessages(prev => [...prev, { text: "Thank you for your message. Our support team will get back to you soon.", sender: "bot" }])
+            }, 1000)
+        }
+    }
+
+    return (
+        <>
+            <Button
+                className={`fixed bottom-4 right-4 rounded-full p-4 ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <MessageCircle className="h-6 w-6" />
+            </Button>
+            {isOpen && (
+                <div className={`fixed bottom-20 right-4 w-80 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl`}>
+                    <div className={`p-4 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-t-lg`}>
+                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>CarMine Support</h3>
+                    </div>
+                    <div className={`h-80 overflow-y-auto p-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                        {messages.map((message, index) => (
+                            <div key={index} className={`mb-4 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                                <span className={`inline-block p-2 rounded-lg ${message.sender === 'user' ? (darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white') : (darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800')}`}>
+                                    {message.text}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+                        <div className="flex">
+                            <Input
+                                type="text"
+                                placeholder="Type your message..."
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className={`flex-grow ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-800'}`}
+                            />
+                            <Button type="submit" className={`ml-2 ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}>
+                                Send
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            )}
+        </>
     )
 }
