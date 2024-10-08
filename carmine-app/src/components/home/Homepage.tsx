@@ -88,7 +88,7 @@ export default function CarMine() {
                                     <Progress value={progress} className="w-8 h-1 absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
                                 )}
                             </div>
-                            <Button variant="outline" className={`hidden md:inline-flex ${darkMode ? 'border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
+                            <Button variant="outline" className={`hidden md:inline-flex ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
                                 Sign In
                             </Button>
                             <DropdownMenu>
