@@ -101,7 +101,15 @@ export default function CarMine() {
                                 <DropdownMenuContent align="end" className={`w-48 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                                     {['Buy', 'Sell', 'Marketplace', 'Rent', 'Sign In'].map((item) => (
                                         <DropdownMenuItem key={item}>
-                                            <Link href={`/${item.toLowerCase().replace(' ', '')}`} className={`flex w-full font-semibold ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}>
+                                            <Link
+                                                href={`/${item.toLowerCase().replace(' ', '')}`}
+                                                className={`flex w-full font-semibold transition-colors duration-300 ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}
+                                                style={{
+                                                    padding: '0.5rem 1rem',
+                                                    borderRadius: '0.375rem', // 6px rounded corners
+                                                    transition: 'background-color 0.3s ease, color 0.3s ease',
+                                                }}
+                                            >
                                                 {item}
                                             </Link>
                                         </DropdownMenuItem>
