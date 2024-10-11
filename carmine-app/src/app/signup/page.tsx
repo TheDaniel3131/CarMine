@@ -28,8 +28,9 @@ export default function SignupPage() {
     }
 
     return (
-        <section className="container mx-auto px-4 py-20 md:py-24">
+        <section className="container mx-auto px-4 py-8">
             <div className="max-w-md mx-auto">
+                <h1 className="text-3xl font-bold text-center mb-6"></h1>
                 <Card>
                     <CardHeader>
                         <CardTitle>Sign Up</CardTitle>
