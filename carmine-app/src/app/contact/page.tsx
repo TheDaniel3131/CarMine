@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Car, DollarSign, Camera, FileText, Menu, Sun, Moon, Twitter, Facebook, Instagram } from 'lucide-react'
+import { Car, Menu, Sun, Moon, Mail, Phone, MapPin, Instagram, Twitter, Facebook } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export default function SellPage() {
+export default function ContactUs() {
     const [darkMode, setDarkMode] = useState(false)
     const [progress, setProgress] = useState(0)
 
@@ -102,46 +102,53 @@ export default function SellPage() {
 
             <main className="container mx-auto px-4 py-20 md:py-24">
                 <h1 className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${darkMode ? 'bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400' : 'bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600'}`}>
-                    Sell Your Car
+                    Contact Us
                 </h1>
 
-                <div className="max-w-2xl mx-auto">
-                    <form className="space-y-6">
-                        <div>
-                            <label htmlFor="make" className="block text-sm font-medium mb-2">Make</label>
-                            <Input id="make" type="text" placeholder="e.g. Toyota" className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
-                        </div>
-                        <div>
-                            <label htmlFor="model" className="block text-sm font-medium mb-2">Model</label>
-                            <Input id="model" type="text" placeholder="e.g. Camry" className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
-                        </div>
-                        <div>
-                            <label htmlFor="year" className="block text-sm font-medium mb-2">Year</label>
-                            <Input id="year" type="number" placeholder="e.g. 2020" className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
-                        </div>
-                        <div>
-                            <label htmlFor="price" className="block text-sm font-medium mb-2">Price</label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                <Input id="price" type="number" placeholder="e.g. 15000" className={`w-full pl-10 ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
+                <div className="max-w-4xl mx-auto mb-16 grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h2 className={`text-3xl font-bold mb-6 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Get in Touch</h2>
+                        <form className="space-y-6">
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium mb-2">Name</label>
+                                <Input id="name" type="text" placeholder="Your Name" className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
+                            </div>
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
+                                <Input id="email" type="email" placeholder="your@email.com" className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
+                            </div>
+                            <div>
+                                <label htmlFor="message" className="block text-sm font-medium mb-2">Message</label>
+                                <Textarea id="message" placeholder="Your message..." className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} rows={4} />
+                            </div>
+                            <Button type="submit" className={`w-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}>
+                                Send Message
+                            </Button>
+                        </form>
+                    </div>
+                    <div>
+                        <h2 className={`text-3xl font-bold mb-6 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Contact Information</h2>
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-4">
+                                <Mail className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>contact@carmine.com</span>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <Phone className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>+1 (555) 123-4567</span>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <MapPin className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>123 CarMine Street, Auto City, AC 12345</span>
                             </div>
                         </div>
-                        <div>
-                            <label htmlFor="description" className="block text-sm font-medium mb-2">Description</label>
-                            <Textarea id="description" placeholder="Describe your car..." className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`} />
+                        <div className="mt-8">
+                            <h3 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Office Hours</h3>
+                            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Saturday: 10:00 AM - 4:00 PM</p>
+                            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Sunday: Closed</p>
                         </div>
-                        <div>
-                            <label htmlFor="photos" className="block text-sm font-medium mb-2">Photos</label>
-                            <div className={`border-2 border-dashed rounded-lg p-6 text-center ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                                <Camera className="mx-auto h-12 w-12 text-gray-400" />
-                                <p className="mt-1">Drag and drop your photos here, or click to select files</p>
-                                <input id="photos" type="file" multiple className="hidden" />
-                            </div>
-                        </div>
-                        <Button type="submit" className={`w-full ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}>
-                            <FileText className="w-4 h-4 mr-2" /> List Your Car
-                        </Button>
-                    </form>
+                    </div>
                 </div>
             </main>
 
