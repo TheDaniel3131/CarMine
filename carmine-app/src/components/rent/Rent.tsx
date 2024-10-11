@@ -144,7 +144,6 @@ export default function RentPage() {
                                 mode="single"
                                 selected={selectedDate ?? undefined}
                                 onSelect={setSelectedDate}
-                                initialFocus
                                 className={`w-full ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}
                             />
                         </div>
