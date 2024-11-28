@@ -293,7 +293,7 @@ export default function AdminMessagesPage() {
                   <div>Re: {selectedMessage.subject}</div>
                 </div>
                 <div>
-                  <Label htmlFor="reply">Your Reply</Label>
+                  <Label htmlFor="reply" className="mb-4 block">Your Reply</Label>
                   <Textarea
                     id="reply"
                     value={replyContent}
