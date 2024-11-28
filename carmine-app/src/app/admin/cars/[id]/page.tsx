@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+
 import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,168 +15,257 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useTheme } from "@/components/ThemeContext";
 
-interface CarFormData {
+interface Car {
+  id: string;
   make: string;
   model: string;
   year: number;
   price: number;
-  description: string;
+  status: "available" | "sold" | "maintenance";
 }
 
-export default function CarForm({ params }: { params: { id: string } }) {
+export default function AdminCarPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const isEditing = params.id !== "new";
-  const [loading, setLoading] = React.useState(false);
-  const [formData, setFormData] = React.useState<CarFormData>({
-    make: "",
-    model: "",
-    year: new Date().getFullYear(),
-    price: 0,
-    description: "",
-  });
+  const { darkMode } = useTheme();
+  const [car, setCar] = React.useState<Car | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (isEditing) {
-      fetchCar();
+    if (params.id !== "new") {
+      fetchCar(params.id);
+    } else {
+      setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditing]);
+  }, [params.id]);
 
-  const fetchCar = async () => {
+  const fetchCar = async (id: string) => {
     try {
-      const response = await fetch(`/api/cars/${params.id}`);
-      const data = await response.json();
-      setFormData(data);
+      // In a real application, this would be an API call
+      const dummyCar: Car = {
+        id: id,
+        make: "Toyota",
+        model: "Camry",
+        year: 2022,
+        price: 25000,
+        status: "available",
+      };
+      setCar(dummyCar);
     } catch (error) {
       console.error("Error fetching car:", error);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const url = isEditing ? `/api/cars/${params.id}` : "/api/cars";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        router.push("/admin/cars");
-      } else {
-        throw new Error("Failed to save car");
-      }
-    } catch (error) {
-      console.error("Error saving car:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "year" || name === "price" ? Number(value) : value,
-    }));
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const carData = {
+      make: formData.get("make") as string,
+      model: formData.get("model") as string,
+      year: parseInt(formData.get("year") as string),
+      price: parseInt(formData.get("price") as string),
+      status: formData.get("status") as "available" | "sold" | "maintenance",
+    };
+
+    try {
+      if (params.id === "new") {
+        // In a real application, this would be an API call to create a new car
+        console.log("Creating new car:", carData);
+      } else {
+        // In a real application, this would be an API call to update the car
+        console.log("Updating car:", { id: params.id, ...carData });
+      }
+      router.push("/admin/cars");
+    } catch (error) {
+      console.error("Error saving car:", error);
+    }
   };
 
+  if (loading) {
+    return (
+      <div
+        className={`flex flex-col min-h-screen ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+            : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+        }`}
+      >
+        <AH />
+        <main className="flex-grow container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center h-full">
+            Loading...
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto py-10">
+    <div
+      className={`flex flex-col min-h-screen ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+      }`}
+    >
       <AH />
-      <Card>
-        <CardHeader>
-          <CardTitle>{isEditing ? "Edit Car" : "Add New Car"}</CardTitle>
-          <CardDescription>
-            {isEditing
-              ? "Update the car details below"
-              : "Enter the car details below"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="make">Make</Label>
-                <Input
-                  id="make"
-                  name="make"
-                  value={formData.make}
-                  onChange={handleChange}
-                  required
-                />
+      <main className="flex-grow container mx-auto px-4 py-4">
+        <Card
+          className={`shadow-sm ${
+            darkMode ? "bg-gray-800 text-gray-100" : "bg-white"
+          }`}
+        >
+          <CardHeader className="py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl font-bold">
+                  {params.id === "new" ? "Add New Car" : "Edit Car"}
+                </CardTitle>
+                <CardDescription
+                  className={darkMode ? "text-gray-300" : "text-gray-600"}
+                >
+                  {params.id === "new"
+                    ? "Add a new car to your inventory"
+                    : "Edit car details"}
+                </CardDescription>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="model">Model</Label>
-                <Input
-                  id="model"
-                  name="model"
-                  value={formData.model}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="year">Year</Label>
-                <Input
-                  id="year"
-                  name="year"
-                  type="number"
-                  value={formData.year}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="price">Price</Label>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-              />
-            </div>
-            <div className="flex justify-end space-x-4">
               <Button
-                type="button"
                 variant="outline"
                 onClick={() => router.push("/admin/cars")}
+                className={
+                  darkMode
+                    ? "bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900"
+                    : "border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white"
+                }
               >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : "Save"}
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Cars
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="make"
+                    className={darkMode ? "text-gray-300" : ""}
+                  >
+                    Make
+                  </Label>
+                  <Input
+                    id="make"
+                    name="make"
+                    defaultValue={car?.make}
+                    required
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="model"
+                    className={darkMode ? "text-gray-300" : ""}
+                  >
+                    Model
+                  </Label>
+                  <Input
+                    id="model"
+                    name="model"
+                    defaultValue={car?.model}
+                    required
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="year"
+                    className={darkMode ? "text-gray-300" : ""}
+                  >
+                    Year
+                  </Label>
+                  <Input
+                    id="year"
+                    name="year"
+                    type="number"
+                    defaultValue={car?.year}
+                    required
+                    min={1900}
+                    max={new Date().getFullYear() + 1}
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="price"
+                    className={darkMode ? "text-gray-300" : ""}
+                  >
+                    Price
+                  </Label>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    defaultValue={car?.price}
+                    required
+                    min={0}
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="status"
+                  className={darkMode ? "text-gray-300" : ""}
+                >
+                  Status
+                </Label>
+                <Select name="status" defaultValue={car?.status || "available"}>
+                  <SelectTrigger
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
+                  >
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="sold">Sold</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="submit"
+                className={`w-full ${
+                  darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""
+                }`}
+              >
+                {params.id === "new" ? "Add Car" : "Update Car"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }

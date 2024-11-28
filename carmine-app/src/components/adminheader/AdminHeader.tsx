@@ -71,7 +71,7 @@ export default function AH() {
               </span>
             </Link>
             <div className="hidden md:flex space-x-8">
-              {["Dashboard", "Cars", "Messages", "Users", "Reports"].map(
+              {["Dashboard", "Cars", "Messages", "Users"].map(
                 (item) => (
                   <Link
                     key={item}
