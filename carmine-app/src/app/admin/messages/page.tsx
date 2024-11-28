@@ -3,8 +3,7 @@
 import * as React from "react";
 // import { useRouter } from "next/navigation";
 import { Search, Trash, Eye, Reply } from "lucide-react";
-
-import AdminHeader from "@/components/adminheader/AdminHeader";
+import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useTheme } from "@/components/ThemeContext";
 
 interface Message {
   id: string;
@@ -42,7 +42,7 @@ interface Message {
 }
 
 export default function AdminMessagesPage() {
-//   const router = useRouter();
+  // const router = useRouter();
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
@@ -52,6 +52,7 @@ export default function AdminMessagesPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = React.useState(false);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = React.useState(false);
   const [replyContent, setReplyContent] = React.useState("");
+  const { darkMode } = useTheme();
 
   React.useEffect(() => {
     fetchMessages();
@@ -128,17 +129,29 @@ export default function AdminMessagesPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50/50">
-      <AdminHeader />
+    <div
+      className={`flex flex-col min-h-screen ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+      }`}
+    >
+      <AH />
       <main className="flex-grow container mx-auto px-4 py-4">
-        <Card className="shadow-sm">
+        <Card
+          className={`shadow-sm ${
+            darkMode ? "bg-gray-800 text-gray-100" : "bg-white"
+          }`}
+        >
           <CardHeader className="py-4">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-bold">
                   Message Management
                 </CardTitle>
-                <CardDescription>
+                <CardDescription
+                  className={darkMode ? "text-gray-300" : "text-gray-600"}
+                >
                   View and respond to contact form messages
                 </CardDescription>
               </div>
@@ -152,19 +165,43 @@ export default function AdminMessagesPage() {
                   placeholder="Search messages..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-8"
+                  className={`pl-8 ${
+                    darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                  }`}
                 />
               </div>
             </div>
-            <div className="rounded-md border">
+            <div
+              className={`rounded-md border ${
+                darkMode ? "border-gray-700" : "border-gray-200"
+              }`}
+            >
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                  <TableRow
+                    className={
+                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }
+                  >
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Name
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Email
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Subject
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Date
+                    </TableHead>
+                    <TableHead
+                      className={`text-right ${
+                        darkMode ? "text-gray-300" : ""
+                      }`}
+                    >
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -182,11 +219,22 @@ export default function AdminMessagesPage() {
                     </TableRow>
                   ) : (
                     filteredMessages.map((message) => (
-                      <TableRow key={message.id}>
-                        <TableCell>{message.name}</TableCell>
-                        <TableCell>{message.email}</TableCell>
-                        <TableCell>{message.subject}</TableCell>
-                        <TableCell>
+                      <TableRow
+                        key={message.id}
+                        className={
+                          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                        }
+                      >
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {message.name}
+                        </TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {message.email}
+                        </TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {message.subject}
+                        </TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
                           {new Date(message.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell className="text-right">
@@ -198,7 +246,11 @@ export default function AdminMessagesPage() {
                               setIsViewDialogOpen(true);
                             }}
                           >
-                            <Eye className="h-4 w-4" />
+                            <Eye
+                              className={`h-4 w-4 ${
+                                darkMode ? "text-gray-300" : ""
+                              }`}
+                            />
                             <span className="sr-only">View message</span>
                           </Button>
                           <Button
@@ -209,7 +261,11 @@ export default function AdminMessagesPage() {
                               setIsReplyDialogOpen(true);
                             }}
                           >
-                            <Reply className="h-4 w-4" />
+                            <Reply
+                              className={`h-4 w-4 ${
+                                darkMode ? "text-gray-300" : ""
+                              }`}
+                            />
                             <span className="sr-only">Reply to message</span>
                           </Button>
                           <Button
@@ -217,7 +273,11 @@ export default function AdminMessagesPage() {
                             size="icon"
                             onClick={() => deleteMessage(message.id)}
                           >
-                            <Trash className="h-4 w-4" />
+                            <Trash
+                              className={`h-4 w-4 ${
+                                darkMode ? "text-gray-300" : ""
+                              }`}
+                            />
                             <span className="sr-only">Delete message</span>
                           </Button>
                         </TableCell>
@@ -233,33 +293,49 @@ export default function AdminMessagesPage() {
 
       {/* View Message Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent>
+        <DialogContent
+          className={darkMode ? "bg-gray-800 text-gray-100" : "bg-white"}
+        >
           <DialogHeader>
             <DialogTitle>View Message</DialogTitle>
           </DialogHeader>
           {selectedMessage && (
             <div className="space-y-4">
               <div>
-                <Label>Name</Label>
-                <div>{selectedMessage.name}</div>
+                <Label className={darkMode ? "text-gray-300" : ""}>Name</Label>
+                <div className={darkMode ? "text-gray-100" : ""}>
+                  {selectedMessage.name}
+                </div>
               </div>
               <div>
-                <Label>Email</Label>
-                <div>{selectedMessage.email}</div>
+                <Label className={darkMode ? "text-gray-300" : ""}>Email</Label>
+                <div className={darkMode ? "text-gray-100" : ""}>
+                  {selectedMessage.email}
+                </div>
               </div>
               <div>
-                <Label>Subject</Label>
-                <div>{selectedMessage.subject}</div>
+                <Label className={darkMode ? "text-gray-300" : ""}>
+                  Subject
+                </Label>
+                <div className={darkMode ? "text-gray-100" : ""}>
+                  {selectedMessage.subject}
+                </div>
               </div>
               <div>
-                <Label>Message</Label>
-                <div className="whitespace-pre-wrap">
+                <Label className={darkMode ? "text-gray-300" : ""}>
+                  Message
+                </Label>
+                <div
+                  className={`whitespace-pre-wrap ${
+                    darkMode ? "text-gray-100" : ""
+                  }`}
+                >
                   {selectedMessage.message}
                 </div>
               </div>
               <div>
-                <Label>Date</Label>
-                <div>
+                <Label className={darkMode ? "text-gray-300" : ""}>Date</Label>
+                <div className={darkMode ? "text-gray-100" : ""}>
                   {new Date(selectedMessage.createdAt).toLocaleString()}
                 </div>
               </div>
@@ -270,7 +346,9 @@ export default function AdminMessagesPage() {
 
       {/* Reply Message Dialog */}
       <Dialog open={isReplyDialogOpen} onOpenChange={setIsReplyDialogOpen}>
-        <DialogContent>
+        <DialogContent
+          className={darkMode ? "bg-gray-800 text-gray-100" : "bg-white"}
+        >
           <DialogHeader>
             <DialogTitle>Reply to Message</DialogTitle>
           </DialogHeader>
@@ -283,28 +361,47 @@ export default function AdminMessagesPage() {
             >
               <div className="space-y-4">
                 <div>
-                  <Label>To</Label>
-                  <div>
+                  <Label className={darkMode ? "text-gray-300" : ""}>To</Label>
+                  <div className={darkMode ? "text-gray-100" : ""}>
                     {selectedMessage.name} ({selectedMessage.email})
                   </div>
                 </div>
                 <div>
-                  <Label>Subject</Label>
-                  <div>Re: {selectedMessage.subject}</div>
+                  <Label className={darkMode ? "text-gray-300" : ""}>
+                    Subject
+                  </Label>
+                  <div className={darkMode ? "text-gray-100" : ""}>
+                    Re: {selectedMessage.subject}
+                  </div>
                 </div>
                 <div>
-                  <Label htmlFor="reply" className="mb-4 block">Your Reply</Label>
+                    <Label
+                    htmlFor="reply"
+                    className={`mb-4 block ${darkMode ? "text-gray-300" : ""}`}
+                    >
+                    Your Reply
+                    </Label>
                   <Textarea
                     id="reply"
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
                     rows={5}
                     required
+                    className={
+                      darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                    }
                   />
                 </div>
               </div>
               <DialogFooter className="mt-4">
-                <Button type="submit">Send Reply</Button>
+                <Button
+                  type="submit"
+                  className={
+                    darkMode ? "bg-blue-600 text-white hover:bg-blue-700" : ""
+                  }
+                >
+                  Send Reply
+                </Button>
               </DialogFooter>
             </form>
           )}

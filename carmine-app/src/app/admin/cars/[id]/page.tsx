@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-
+import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,7 +39,7 @@ export default function CarForm({ params }: { params: { id: string } }) {
     if (isEditing) {
       fetchCar();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
 
   const fetchCar = async () => {
@@ -92,6 +92,7 @@ export default function CarForm({ params }: { params: { id: string } }) {
 
   return (
     <div className="container mx-auto py-10">
+      <AH />
       <Card>
         <CardHeader>
           <CardTitle>{isEditing ? "Edit Car" : "Add New Car"}</CardTitle>
