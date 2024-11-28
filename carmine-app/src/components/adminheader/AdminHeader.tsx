@@ -77,7 +77,7 @@ export default function AH() {
                             </span>
                         </Link>
                         <div className="hidden md:flex space-x-8">
-                            {["Dashboard", "Cars", "Users", "Reports"].map((item) => (
+                            {["Dashboard", "Cars", "Messages", "Users", "Reports"].map((item) => (
                                 <Link
                                     key={item}
                                     href={`/admin/${item.toLowerCase()}`}
@@ -177,7 +177,6 @@ export default function AH() {
                     </nav>
                 </div>
             </header>
-            {/* Main content goes here */}
         </div>
     );
 }
