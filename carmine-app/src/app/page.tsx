@@ -10,7 +10,7 @@ import Footer from '@/components/Footer'
 export default function CarMine() {
   const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [unreadMessages, setUnreadMessages] = useState(2)
+  const [unreadMessages] = useState(2)
 
   useEffect(() => {
     const timer = setTimeout(() => {
