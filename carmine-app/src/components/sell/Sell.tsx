@@ -10,7 +10,6 @@ import Footer from '@/components/Footer'
 
 export default function SellPage() {
     const [darkMode, setDarkMode] = useState(false)
-    const [progress, setProgress] = useState(0)
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark')
@@ -20,22 +19,12 @@ export default function SellPage() {
     }, [darkMode])
 
     const toggleDarkMode = () => {
-        setProgress(0)
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval)
-                    setDarkMode(!darkMode)
-                    return 100
-                }
-                return prev + 10
-            })
-        }, 50)
+        setDarkMode(!darkMode)
     }
 
     return (
         <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900'}`}>
-        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode}/>
+        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} unreadMessages={0}/>
             <main className="container mx-auto px-4 py-20 md:py-24">
                 <h1 className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${darkMode ? 'bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400' : 'bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600'}`}>
                     Sell Your Car

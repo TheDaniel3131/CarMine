@@ -13,7 +13,7 @@ import {
 
 export default function FAQ() {
     const [darkMode, setDarkMode] = useState(false)
-    const [progress, setProgress] = useState(0)
+
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark')
@@ -23,17 +23,7 @@ export default function FAQ() {
     }, [darkMode])
 
     const toggleDarkMode = () => {
-        setProgress(0)
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval)
-                    setDarkMode(!darkMode)
-                    return 100
-                }
-                return prev + 10
-            })
-        }, 50)
+        setDarkMode(!darkMode)
     }
 
     const faqItems = [
@@ -64,39 +54,80 @@ export default function FAQ() {
     ]
 
     return (
-        <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900'}`}>
-        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <div
+        className={`min-h-screen ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+            : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+        }`}
+      >
+        <Header
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+          unreadMessages={0} // Add this prop with a default value
+        />
 
-            <main className="container mx-auto px-4 py-20 md:py-24">
-                <h1 className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${darkMode ? 'bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400' : 'bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600'}`}>
-                    Frequently Asked Questions
-                </h1>
+        <main className="container mx-auto px-4 py-20 md:py-24">
+          <h1
+            className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
+              darkMode
+                ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
+                : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
+            }`}
+          >
+            Frequently Asked Questions
+          </h1>
 
-                <div className="max-w-3xl mx-auto">
-                    <Accordion type="single" collapsible className="w-full">
-                        {faqItems.map((item, index) => (
-                            <AccordionItem value={`item-${index}`} key={index}>
-                                <AccordionTrigger className={`text-left ${darkMode ? 'text-gray-100 hover:text-blue-400' : 'text-gray-800 hover:text-blue-600'}`}>
-                                    {item.question}
-                                </AccordionTrigger>
-                                <AccordionContent className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-                                    {item.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </div>
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="w-full">
+              {faqItems.map((item, index) => (
+                <AccordionItem value={`item-${index}`} key={index}>
+                  <AccordionTrigger
+                    className={`text-left ${
+                      darkMode
+                        ? "text-gray-100 hover:text-blue-400"
+                        : "text-gray-800 hover:text-blue-600"
+                    }`}
+                  >
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent
+                    className={darkMode ? "text-gray-300" : "text-gray-600"}
+                  >
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
 
-                <div className="mt-16 text-center">
-                    <h2 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-gray-100' : 'text-gray-800'}`}>Still have questions?</h2>
-                    <p className={`mb-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>If you couldn&apos;t find the answer to your question, feel free to contact us.</p>
-                    <Button className={`${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}>
-                        Contact Support
-                    </Button>
-                </div>
-            </main>
+          <div className="mt-16 text-center">
+            <h2
+              className={`text-2xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Still have questions?
+            </h2>
+            <p
+              className={`mb-8 ${darkMode ? "text-gray-300" : "text-gray-600"}`}
+            >
+              If you couldn&apos;t find the answer to your question, feel free
+              to contact us.
+            </p>
+            <Button
+              className={`${
+                darkMode
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              } text-white`}
+            >
+              Contact Support
+            </Button>
+          </div>
+        </main>
 
-            <Footer darkMode={darkMode} />
-        </div>
-    )
+        <Footer darkMode={darkMode} />
+      </div>
+    );
 }
