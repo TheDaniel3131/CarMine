@@ -1,3 +1,5 @@
+"use client"
+
 import { NextResponse } from "next/server";
 import { Client } from "pg";
 import bcrypt from "bcryptjs";
