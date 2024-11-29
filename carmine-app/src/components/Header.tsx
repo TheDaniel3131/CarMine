@@ -20,25 +20,35 @@ interface HeaderProps {
 
 export default function Header({ darkMode, toggleDarkMode, unreadMessages }: HeaderProps) {
   const [progress, setProgress] = useState(0)
+  const [isToggling, setIsToggling] = useState(false)
 
   useEffect(() => {
-    if (progress > 0 && progress < 100) {
-      const interval = setInterval(() => {
+    let interval: NodeJS.Timeout;
+    if (isToggling) {
+      interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval)
+            setIsToggling(false)
             return 100
           }
           return prev + 10
         })
       }, 50)
-      return () => clearInterval(interval)
     }
-  }, [progress])
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [isToggling])
 
   const handleToggleDarkMode = () => {
     setProgress(0)
-    toggleDarkMode()
+    setIsToggling(true)
+    
+    // Delay the actual dark mode toggle to match the progress animation
+    setTimeout(() => {
+      toggleDarkMode()
+    }, 500)
   }
 
   return (
@@ -60,10 +70,16 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
           </div>
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <Button variant="ghost" size="icon" onClick={handleToggleDarkMode} className={darkMode ? 'text-yellow-400' : 'text-gray-600'}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleToggleDarkMode} 
+                disabled={isToggling}
+                className={`${darkMode ? 'text-yellow-400' : 'text-gray-600'} ${isToggling ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
                 {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
-              {progress > 0 && progress < 100 && (
+              {isToggling && progress > 0 && progress < 100 && (
                 <Progress value={progress} className="w-8 h-1 absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
               )}
             </div>
@@ -111,4 +127,3 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
     </header>
   )
 }
-

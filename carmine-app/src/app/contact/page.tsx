@@ -10,7 +10,7 @@ import Footer from '@/components/Footer'
 
 export default function ContactUs() {
     const [darkMode, setDarkMode] = useState(false)
-
+    const [progress, setProgress] = useState(0)
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark')

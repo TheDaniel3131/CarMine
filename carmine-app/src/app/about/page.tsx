@@ -9,6 +9,7 @@ import { Users, Zap, Shield } from 'lucide-react'
 
 export default function AboutUs() {
     const [darkMode, setDarkMode] = useState(false)
+    const [progress, setProgress] = useState(0)
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark')
@@ -17,19 +18,19 @@ export default function AboutUs() {
         }
     }, [darkMode])
 
-    const toggleDarkMode = () => {
-        setProgress(0)
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval)
-                    setDarkMode(!darkMode)
-                    return 100
-                }
-                return prev + 10
-            })
-        }, 50)
-    }
+  const toggleDarkMode = () => {
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setDarkMode(!darkMode);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 50);
+  };
 
     return (
         <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' : 'bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900'}`}>

@@ -11,6 +11,7 @@ import Footer from '@/components/Footer'
 
 export default function InboxPage() {
   const [darkMode, setDarkMode] = useState(false)
+  
   const [messages, setMessages] = useState([
     { id: 1, from: 'John Doe', subject: 'Welcome to CarMine!', content: 'Thank you for joining CarMine. We hope you enjoy our services.', read: false, starred: false },
     { id: 2, from: 'Jane Smith', subject: 'New Car Listing', content: 'A new car matching your preferences has been listed. Check it out!', read: false, starred: false },

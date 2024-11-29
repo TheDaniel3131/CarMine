@@ -18,6 +18,7 @@ import { Calendar } from "@/components/ui/calendar"
 
 export default function RentPage() {
     const [darkMode, setDarkMode] = useState(false)
+    const [progress, setProgress] = useState(0)
     const [selectedDate, setSelectedDate] = useState<Date>()
 
     useEffect(() => {
