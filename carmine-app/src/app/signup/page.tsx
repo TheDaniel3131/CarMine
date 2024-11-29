@@ -16,16 +16,35 @@ export default function SignupPage() {
     const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (password !== confirmPassword) {
-            alert("Passwords do not match")
-            return
-        }
-        // TODO: Implement actual signup logic here
-        console.log("Signup attempt with:", name, email, password)
-        // For now, we'll just redirect to the login page
-        router.push("/signin")
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
     }
+
+    try {
+        const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+        });
+
+        if (!response.ok) {
+        const error = await response.json();
+        alert(`Signup failed: ${error.message}`);
+        return;
+        }
+
+        alert("Signup successful! Redirecting to login...");
+        router.push("/signin");
+    } catch (error) {
+        console.error("Error during signup:", error);
+        alert("An unexpected error occurred. Please try again.");
+    }
+    };
 
     return (
         <section className="container mx-auto px-4 py-8">
