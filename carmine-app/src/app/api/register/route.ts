@@ -1,8 +1,8 @@
-"use client"
-
 import { NextResponse } from "next/server";
 import { Client } from "pg";
 import bcrypt from "bcryptjs";
+
+export const dynamic = "force-dynamic"; // Ensure the route is dynamic
 
 export async function POST(req: Request) {
   const { name, email, password } = await req.json();
@@ -25,24 +25,20 @@ export async function POST(req: Request) {
   try {
     await client.connect();
 
-    // Hash the password before saving it
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert user into the database
     const query = `
-            INSERT INTO public.user (username, email, password)
-            VALUES ($1, $2, $3)
-            RETURNING user_id, username, email;
-        `;
+      INSERT INTO public.user (username, email, password)
+      VALUES ($1, $2, $3)
+      RETURNING user_id, username, email;
+    `;
     const values = [name, email, hashedPassword];
 
     const result = await client.query(query, values);
 
-    return NextResponse.json(result.rows[0]); // Return the inserted user (excluding password)
+    return NextResponse.json(result.rows[0]);
   } catch (error) {
     console.error("Error saving user:", error);
     if ((error as { code?: string }).code === "23505") {
-      // Unique constraint violation (email already exists)
       return NextResponse.json(
         { message: "Email already in use" },
         { status: 400 }
@@ -53,6 +49,6 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   } finally {
-    await client.end(); // Ensure the database connection is closed
+    await client.end();
   }
 }

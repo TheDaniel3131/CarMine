@@ -1,13 +1,12 @@
-"use client"
-
 import { NextResponse } from "next/server";
 import { Client } from "pg";
 import bcrypt from "bcryptjs";
 
+export const dynamic = "force-dynamic"; // Ensure the route is dynamic
+
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
-  // Validate input
   if (!email || !password) {
     return NextResponse.json(
       { message: "Email and password are required" },
@@ -26,7 +25,6 @@ export async function POST(req: Request) {
   try {
     await client.connect();
 
-    // Query the user by email
     const query = `
       SELECT user_id, username, email, password 
       FROM public.user 
@@ -35,7 +33,6 @@ export async function POST(req: Request) {
     const values = [email];
     const result = await client.query(query, values);
 
-    // Check if user exists
     if (result.rows.length === 0) {
       return NextResponse.json(
         { message: "Invalid email or password" },
@@ -44,9 +41,8 @@ export async function POST(req: Request) {
     }
 
     const user = result.rows[0];
-
-    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return NextResponse.json(
         { message: "Invalid email or password" },
@@ -54,16 +50,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate a mock session or token (replace with real session/token logic)
     const sessionData = {
-      id: user.id,
+      id: user.user_id,
       username: user.username,
       email: user.email,
     };
 
-    return NextResponse.json(sessionData); // Respond with user info or token
+    return NextResponse.json(sessionData);
   } catch (error) {
-    console.error("Error during signin:", error);
+    console.error("Error during login:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

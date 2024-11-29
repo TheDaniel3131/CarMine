@@ -1,7 +1,7 @@
-"use client"
-
 import { NextResponse } from "next/server";
 import { Client } from "pg";
+
+export const dynamic = "force-dynamic"; // Ensure the route is dynamic and not prerendered
 
 export async function GET() {
   const client = new Client({
@@ -16,7 +16,7 @@ export async function GET() {
 
   try {
     const result = await client.query("SELECT * FROM public.user");
-    return NextResponse.json(result.rows); // Send the data back
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -24,6 +24,6 @@ export async function GET() {
       { status: 500 }
     );
   } finally {
-    await client.end(); // Close the connection
+    await client.end();
   }
 }
