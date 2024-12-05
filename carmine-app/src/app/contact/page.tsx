@@ -1,128 +1,168 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Mail, Phone, MapPin } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import { useState, useEffect } from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function ContactUs() {
-    const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    }, [darkMode])
-
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode)
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
+  }, [darkMode]);
 
-    return (
-      <div
-        className={`min-h-screen ${
-          darkMode
-            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
-            : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
-        }`}
-      >
-        <Header
-          darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
-          unreadMessages={0} // Add this prop with a default value
-        />
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
-        <main className="container mx-auto px-4 py-20 md:py-24">
-          <h1
-            className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
-              darkMode
-                ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
-                : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
-            }`}
-          >
-            Contact Us
-          </h1>
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
-          <div className="max-w-4xl mx-auto mb-16 grid md:grid-cols-2 gap-12">
-            <div>
-              <h2
-                className={`text-3xl font-bold mb-6 ${
-                  darkMode ? "text-gray-100" : "text-gray-800"
-                }`}
-              >
-                Get in Touch
-              </h2>
-              <form className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Name
-                  </label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Your Name"
-                    className={`w-full ${
-                      darkMode
-                        ? "bg-gray-700 text-white"
-                        : "bg-white text-gray-900"
-                    }`}
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Email
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    className={`w-full ${
-                      darkMode
-                        ? "bg-gray-700 text-white"
-                        : "bg-white text-gray-900"
-                    }`}
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    placeholder="Your message..."
-                    className={`w-full ${
-                      darkMode
-                        ? "bg-gray-700 text-white"
-                        : "bg-white text-gray-900"
-                    }`}
-                    rows={4}
-                  />
-                </div>
-                <Button
-                  type="submit"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("https://your-api-url/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit message");
+      }
+
+      const result = await response.json();
+      alert(result.message);
+      setFormData({ name: "", email: "", message: "" }); // Reset form on success
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
+  return (
+    <div
+      className={`min-h-screen ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+      }`}
+    >
+      <Header
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        unreadMessages={0} // Add this prop with a default value
+      />
+
+      <main className="container mx-auto px-4 py-20 md:py-24">
+        <h1
+          className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
+            darkMode
+              ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
+              : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
+          }`}
+        >
+          Contact Us
+        </h1>
+
+        <div className="max-w-4xl mx-auto mb-16 grid md:grid-cols-2 gap-12">
+          <div>
+            <h2
+              className={`text-3xl font-bold mb-6 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Get in Touch
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium mb-2"
+                >
+                  Name
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Your Name"
                   className={`w-full ${
                     darkMode
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  } text-white`}
+                      ? "bg-gray-700 text-white"
+                      : "bg-white text-gray-900"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium mb-2"
                 >
-                  Send Message
-                </Button>
-              </form>
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  className={`w-full ${
+                    darkMode
+                      ? "bg-gray-700 text-white"
+                      : "bg-white text-gray-900"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium mb-2"
+                >
+                  Message
+                </label>
+                <Textarea
+                  id="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Your message..."
+                  className={`w-full ${
+                    darkMode
+                      ? "bg-gray-700 text-white"
+                      : "bg-white text-gray-900"
+                  }`}
+                  rows={4}
+                />
+              </div>
+              <Button
+                type="submit"
+                className={`w-full ${
+                  darkMode
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-blue-600 hover:bg-blue-700"
+                } text-white`}
+              >
+                Send Message
+              </Button>
+            </form>
             </div>
             <div>
               <h2
