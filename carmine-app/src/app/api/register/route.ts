@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic"; // Ensure the route is dynamic
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const { username, email, password } = await req.json();
-
-  // Log the received data to verify
-  console.log("Received data:", { username, email, password });
-
-  if (!username || !email || !password) {
-    return NextResponse.json(
-      { message: "Missing required fields" },
-      { status: 400 }
-    );
-  }
-
   try {
+    const { username, email, password } = await req.json();
+
+    console.log("Received data:", { username, email, password });
+
+    if (!username || !email || !password) {
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
     const response = await fetch("http://localhost:5208/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,15 +25,37 @@ export async function POST(req: Request) {
       }),
     });
 
+    // Add more detailed error handling
     if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
+      // Try to get error text if JSON parsing fails
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+
+      return NextResponse.json(
+        { message: "Registration failed", details: errorText },
+        { status: response.status }
+      );
     }
 
+    // Safely parse JSON
     const result = await response.json();
     return NextResponse.json(result);
+
   } catch (error) {
-    console.error("Error during registration:", error);
+    // Log the full error for debugging
+    console.error("Detailed registration error:", error);
+
+    // Check if it's a JSON parsing error
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        { 
+          message: "Invalid response from server", 
+          errorDetails: error.message 
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

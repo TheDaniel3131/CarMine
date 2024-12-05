@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +14,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface Car {
+  car_id: number;
+  car_make: string;
+  car_model: string;
+  car_year: number;
+  car_mileage: number;
+  car_price: number;
+  car_description: string;
+  car_quantity: number;
+}
+
 export default function BuyPage() {
   const [darkMode, setDarkMode] = useState(false);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState("");
 
   useEffect(() => {
     if (darkMode) {
@@ -29,6 +43,49 @@ export default function BuyPage() {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+
+  // Fetch cars from the API
+  useEffect(() => {
+    async function fetchCars() {
+      try {
+        const response = await fetch("/api/buy");
+        if (!response.ok) {
+          throw new Error("Failed to fetch cars");
+        }
+        const data: Car[] = await response.json();
+        setCars(data);
+        setFilteredCars(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchCars();
+  }, []);
+
+  // Filter cars based on search query and price range
+  useEffect(() => {
+    let results = cars;
+
+    if (searchQuery) {
+      results = results.filter(
+        (car) =>
+          car.car_make.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          car.car_model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          car.car_description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (priceRange) {
+      const [min, max] = priceRange.split("-").map(Number);
+      results = results.filter(
+        (car) =>
+          car.car_price >= (min || 0) && car.car_price <= (max || Infinity)
+      );
+    }
+
+    setFilteredCars(results);
+  }, [searchQuery, priceRange, cars]);
 
   return (
     <div
@@ -55,6 +112,7 @@ export default function BuyPage() {
           Find Your Dream Car
         </h1>
 
+        {/* Search Bar and Filters */}
         <div className="max-w-4xl mx-auto mb-16">
           <div
             className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 ${
@@ -64,13 +122,15 @@ export default function BuyPage() {
             <Input
               type="text"
               placeholder="Search by make, model, or keyword"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={`flex-grow ${
                 darkMode
                   ? "bg-gray-700 text-white"
                   : "bg-gray-100 text-gray-900"
               }`}
             />
-            <Select>
+            <Select onValueChange={(value) => setPriceRange(value)}>
               <SelectTrigger
                 className={`w-full md:w-[180px] ${
                   darkMode
@@ -84,7 +144,7 @@ export default function BuyPage() {
                 <SelectItem value="0-10000">$0 - $10,000</SelectItem>
                 <SelectItem value="10000-20000">$10,000 - $20,000</SelectItem>
                 <SelectItem value="20000-30000">$20,000 - $30,000</SelectItem>
-                <SelectItem value="30000+">$30,000+</SelectItem>
+                <SelectItem value="30000-100000">$30,000 - $100,000</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -99,37 +159,29 @@ export default function BuyPage() {
           </div>
         </div>
 
+        {/* Car Listings */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {filteredCars.map((car) => (
             <div
-              key={i}
+              key={car.car_id}
               className={`${
                 darkMode ? "bg-gray-800" : "bg-white"
               } rounded-xl overflow-hidden shadow-lg`}
             >
-              <Image
-                src={`https://hebbkx1anhila5yf.public.blob.vercel-storage.com/car-${
-                  (i % 3) + 1
-                }-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg`}
-                alt={`Car ${i}`}
-                width={400}
-                height={250}
-                className="w-full h-48 object-cover"
-              />
               <div className="p-6">
                 <h3
                   className={`text-xl font-bold mb-2 ${
                     darkMode ? "text-gray-100" : "text-gray-800"
                   }`}
                 >
-                  2023 Model Y
+                  {car.car_year} {car.car_make} {car.car_model}
                 </h3>
                 <p
                   className={`${
                     darkMode ? "text-gray-300" : "text-gray-600"
                   } mb-4`}
                 >
-                  Electric SUV with advanced features and long range.
+                  {car.car_description}
                 </p>
                 <div className="flex justify-between items-center">
                   <span
@@ -137,7 +189,7 @@ export default function BuyPage() {
                       darkMode ? "text-blue-400" : "text-blue-600"
                     }`}
                   >
-                    $55,000
+                    ${car.car_price.toLocaleString()}
                   </span>
                   <Button
                     size="sm"
