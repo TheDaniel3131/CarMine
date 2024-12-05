@@ -15,7 +15,7 @@ export async function GET() {
   await client.connect();
 
   try {
-    const result = await client.query("SELECT * FROM public.user");
+  const result = await client.query('SELECT * FROM public."Users"');
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error(error);

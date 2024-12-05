@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Car, Menu, Sun, Moon, Inbox } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Car, Menu, Sun, Moon, Inbox, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -11,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from '@/components/contexts/AuthContext'
 
 interface HeaderProps {
   darkMode: boolean;
@@ -21,6 +23,8 @@ interface HeaderProps {
 export default function Header({ darkMode, toggleDarkMode, unreadMessages }: HeaderProps) {
   const [progress, setProgress] = useState(0)
   const [isToggling, setIsToggling] = useState(false)
+  const { isAuthenticated, logout } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -49,6 +53,11 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
     setTimeout(() => {
       toggleDarkMode()
     }, 500)
+  }
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
   }
 
   return (
@@ -83,19 +92,27 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
                 <Progress value={progress} className="w-8 h-1 absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
               )}
             </div>
-            <Link href="/inbox">
-              <Button variant="ghost" size="icon" className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                <Inbox className="h-5 w-5" />
-                {unreadMessages > 0 && (
-                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500" />
-                )}
+            {isAuthenticated && (
+              <Link href="/inbox">
+                <Button variant="ghost" size="icon" className={`relative ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <Inbox className="h-5 w-5" />
+                  {unreadMessages > 0 && (
+                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Button>
+              </Link>
+            )}
+            {isAuthenticated ? (
+              <Button variant="outline" onClick={handleLogout} className={`hidden font-bold md:inline-flex ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
+                <LogOut className="mr-2 h-4 w-4" /> Logout
               </Button>
-            </Link>
-            <Link href="/signin">
-              <Button variant="outline" className={`hidden font-bold md:inline-flex ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
-                Sign In
-              </Button>
-            </Link>
+            ) : (
+              <Link href="/signin">
+                <Button variant="outline" className={`hidden font-bold md:inline-flex ${darkMode ? 'bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'} font-semibold`}>
+                  Sign In
+                </Button>
+              </Link>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={`md:hidden ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -104,7 +121,7 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`w-48 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                {['Buy', 'Sell', 'Marketplace', 'Rent', 'Sign In'].map((item) => (
+                {['Buy', 'Sell', 'Marketplace', 'Rent'].map((item) => (
                   <DropdownMenuItem key={item}>
                     <Link
                       href={`/${item.toLowerCase().replace(' ', '')}`}
@@ -119,6 +136,26 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                {isAuthenticated ? (
+                  <>
+                    <DropdownMenuItem>
+                      <Link href="/inbox" className={`flex w-full font-semibold transition-colors duration-300 ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}>
+                        Inbox
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <button onClick={handleLogout} className={`flex w-full font-semibold transition-colors duration-300 ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}>
+                        Logout
+                      </button>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem>
+                    <Link href="/signin" className={`flex w-full font-semibold transition-colors duration-300 ${darkMode ? 'text-white hover:text-blue-400' : 'text-gray-900 hover:text-blue-600'}`}>
+                      Sign In
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
