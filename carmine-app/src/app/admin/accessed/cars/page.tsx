@@ -36,16 +36,12 @@ export default function AdminCarsPage() {
   const router = useRouter();
   const [cars, setCars] = React.useState<Car[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const { darkMode } = useTheme();
 
-  React.useEffect(() => {
-    fetchCars();
-  }, []);
-
   const fetchCars = async () => {
     try {
-      // In a real application, this would be an API call
       const dummyCars: Car[] = [
         {
           id: "1",
@@ -96,10 +92,34 @@ export default function AdminCarsPage() {
     }
   };
 
+  React.useEffect(() => {
+    fetchCars();
+  }, []);
+
+  React.useEffect(() => {
+    const isAuthenticated = localStorage.getItem("authenticated") === "true";
+
+    const timeout = setTimeout(() => {
+      if (!isAuthenticated) {
+        router.push("/admin/signin");
+      } else {
+        setIsLoading(false); // Stop showing the loading screen
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+      </div>
+    );
+  }
+
   const deleteCar = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this car?")) {
       try {
-        // In a real application, this would be an API call
         setCars(cars.filter((car) => car.id !== id));
       } catch (error) {
         console.error("Error deleting car:", error);

@@ -1,30 +1,26 @@
-// // middleware.ts
-// import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-// export function middleware(req: NextRequest) {
-//   const { pathname } = req.nextUrl;
+export function middleware(req: NextRequest) {
+  const { pathname, searchParams } = req.nextUrl;
 
-//   // Allow access to login and signup routes
-//   if (pathname === "/admin/signin" || pathname === "/admin/signup") {
-//     return NextResponse.next();
-//   }
+  // Allow access to the signin page
+  if (pathname === "/admin/signin") {
+    return NextResponse.next();
+  }
 
-//   // Check for the session cookie (admin-session)
-//   const session = req.cookies.get("admin-session");
+  // Protect all routes under /admin/accessed
+  if (pathname.startsWith("/admin/accessed")) {
+    const isAuthenticated = searchParams.get("authenticated") === "true";
 
-//   if (!session) {
-//     return NextResponse.redirect(new URL("/admin/signin", req.url)); // Redirect if no session
-//   }
+    if (!isAuthenticated) {
+      // Redirect unauthenticated users to signin
+      return NextResponse.redirect(new URL("/admin/signin", req.url));
+    }
+  }
 
-//   return NextResponse.next(); // Allow access to protected routes
-// }
-
-// // Apply middleware to all admin routes
-// export const config = {
-//   matcher: ["/admin/:path*"], // Protect all routes under /admin/*
-// };
-
-
-export function middleware(){
-
+  return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/admin/accessed/:path*"],
+};

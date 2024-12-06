@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import {
   Select,
   SelectContent,
@@ -14,199 +12,432 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-export default function MarketplacePage() {
-  const [darkMode, setDarkMode] = useState(false);
+interface Car {
+  id: number;
+  name: string;
+  make?: string;
+  model?: string;
+  year?: number;
+  trim?: string;
+  engine?: string;
+  body?: string;
+}
+
+export default function Marketplace() {
+  const [makes, setMakes] = useState<Car[]>([]);
+  const [models, setModels] = useState<Car[]>([]);
+  const [trims, setTrims] = useState<Car[]>([]);
+  const [engines, setEngines] = useState<Car[]>([]);
+  const [bodies, setBodies] = useState<Car[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedMake, setSelectedMake] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedTrim, setSelectedTrim] = useState("");
+  const [selectedEngine, setSelectedEngine] = useState("");
+  const [selectedBody, setSelectedBody] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+    fetchMakes();
+  }, []);
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  useEffect(() => {
+    if (selectedMake) fetchModels();
+  }, [selectedMake]);
+
+  useEffect(() => {
+    if (selectedModel) {
+      fetchTrims();
+      fetchBodies();
+    }
+  }, [selectedModel]);
+
+  useEffect(() => {
+    if (selectedTrim) fetchEngines();
+  }, [selectedTrim]);
+
+  useEffect(() => {
+    fetchCars();
+  }, [
+    selectedMake,
+    selectedModel,
+    selectedTrim,
+    selectedEngine,
+    selectedBody,
+    page,
+    searchTerm,
+  ]);
+
+  const fetchMakes = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      const response = await fetch(`/api/admin/cars/makes?${yearParams}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch makes");
+      }
+      const data = await response.json();
+      setMakes(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load makes");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const parts = [
-    {
-      name: "High Performance Brake Pads",
-      price: 89.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/brake-pads-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-    {
-      name: "LED Headlight Kit",
-      price: 129.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/headlight-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-    {
-      name: "Performance Air Filter",
-      price: 49.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/air-filter-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-    {
-      name: "Alloy Wheel Set",
-      price: 599.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wheels-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-    {
-      name: "Suspension Lowering Kit",
-      price: 299.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/suspension-kit-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-    {
-      name: "Performance Exhaust System",
-      price: 449.99,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/exhaust-system-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
-    },
-  ];
+  const fetchModels = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      const response = await fetch(
+        `/api/admin/cars/models?${yearParams}&make=${selectedMake}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch models");
+      }
+      const data = await response.json();
+      setModels(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load models");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTrims = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      const response = await fetch(
+        `/api/admin/cars/trims?${yearParams}&make=${selectedMake}&model=${selectedModel}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch trims");
+      }
+      const data = await response.json();
+      setTrims(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load trims");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEngines = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      const response = await fetch(
+        `/api/admin/cars/engines?${yearParams}&make=${selectedMake}&model=${selectedModel}&trim=${selectedTrim}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch engines");
+      }
+      const data = await response.json();
+      setEngines(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load engines");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBodies = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      const response = await fetch(
+        `/api/admin/cars/bodies?${yearParams}&make=${selectedMake}&model=${selectedModel}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch bodies");
+      }
+      const data = await response.json();
+      setBodies(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load bodies");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCars = async () => {
+    try {
+      setLoading(true);
+      const years = ["2015", "2016", "2017", "2018", "2019", "2020"];
+      const yearParams = years.map((year) => `year=${year}`).join("&");
+      let url = `/api/admin/cars/trims?${yearParams}&page=${page}&limit=9`;
+      if (selectedMake) url += `&make=${selectedMake}`;
+      if (selectedModel) url += `&model=${selectedModel}`;
+      if (selectedTrim) url += `&trim=${selectedTrim}`;
+      if (selectedEngine) url += `&engine=${selectedEngine}`;
+      if (selectedBody) url += `&body=${selectedBody}`;
+      if (searchTerm) url += `&search=${searchTerm}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch cars");
+      }
+      const data = await response.json();
+      setCars((prevCars) =>
+        page === 1 ? data.data : [...prevCars, ...data.data]
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load cars");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    setPage(1);
+    fetchCars();
+  };
+
+  const clearSelection = (
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setter("");
+    setPage(1);
+  };
+
+  const loadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
-          : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
-      }`}
-    >
-      <Header
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        unreadMessages={0} // Add this prop with a default value
-      />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Car Marketplace</h1>
 
-      <main className="container mx-auto px-4 py-20 md:py-24">
-        <h1
-          className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
-            darkMode
-              ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
-              : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
-          }`}
-        >
-          Parts Marketplace
-        </h1>
-
-        <div className="max-w-4xl mx-auto mb-12">
-          <div
-            className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 ${
-              darkMode ? "bg-gray-800" : "bg-white"
-            } p-6 rounded-xl shadow-lg`}
-          >
-            <Input
-              type="text"
-              placeholder="Search for parts..."
-              className={`flex-grow ${
-                darkMode
-                  ? "bg-gray-700 text-white"
-                  : "bg-gray-100 text-gray-900"
-              }`}
-            />
-            <Select>
-              <SelectTrigger
-                className={`w-full md:w-[180px] ${
-                  darkMode
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-gray-900"
-                }`}
-              >
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="brakes">Brakes</SelectItem>
-                <SelectItem value="suspension">Suspension</SelectItem>
-                <SelectItem value="engine">Engine</SelectItem>
-                <SelectItem value="exterior">Exterior</SelectItem>
-                <SelectItem value="interior">Interior</SelectItem>
-              </SelectContent>
-            </Select>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div>
+          <Label htmlFor="make" className="mb-2 block">
+            Make
+          </Label>
+          <Select value={selectedMake} onValueChange={setSelectedMake}>
+            <SelectTrigger id="make" className="w-full">
+              <SelectValue placeholder="Select Make" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-">Any Make</SelectItem>
+              {makes.map((make) => (
+                <SelectItem key={make.id} value={make.name}>
+                  {make.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedMake && (
             <Button
-              className={`w-full md:w-auto ${
-                darkMode
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } text-white`}
+              variant="ghost"
+              size="sm"
+              className="mt-1"
+              onClick={() => clearSelection(setSelectedMake)}
             >
-              <Search className="w-4 h-4 mr-2" /> Search
+              <X className="w-4 h-4 mr-1" /> Clear
             </Button>
-          </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {parts.map((part, index) => (
-            <div
-              key={index}
-              className={`${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } rounded-xl overflow-hidden shadow-lg`}
+        <div>
+          <Label htmlFor="model" className="mb-2 block">
+            Model
+          </Label>
+          <Select value={selectedModel} onValueChange={setSelectedModel}>
+            <SelectTrigger id="model" className="w-full">
+              <SelectValue placeholder="Select Model" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-">Any Model</SelectItem>
+              {models.map((model) => (
+                <SelectItem key={model.id} value={model.name}>
+                  {model.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedModel && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1"
+              onClick={() => clearSelection(setSelectedModel)}
             >
-              <Image
-                src={part.image}
-                alt={part.name}
-                width={400}
-                height={300}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h3
-                  className={`text-xl font-bold mb-2 ${
-                    darkMode ? "text-gray-100" : "text-gray-800"
-                  }`}
-                >
-                  {part.name}
-                </h3>
-                <p
-                  className={`${
-                    darkMode ? "text-gray-300" : "text-gray-600"
-                  } mb-4`}
-                >
-                  High-quality aftermarket part
-                </p>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={`text-2xl font-bold ${
-                      darkMode ? "text-blue-400" : "text-blue-600"
-                    }`}
-                  >
-                    ${part.price}
-                  </span>
-                  <Button
-                    size="sm"
-                    className={`${
-                      darkMode
-                        ? "bg-blue-600 hover:bg-blue-700"
-                        : "bg-blue-600 hover:bg-blue-700"
-                    } text-white`}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
         </div>
 
+        <div>
+          <Label htmlFor="trim" className="mb-2 block">
+            Trim
+          </Label>
+          <Select value={selectedTrim} onValueChange={setSelectedTrim}>
+            <SelectTrigger id="trim" className="w-full">
+              <SelectValue placeholder="Select Trim" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-">Any Trim</SelectItem>
+              {trims.map((trim) => (
+                <SelectItem key={trim.id} value={trim.name}>
+                  {trim.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedTrim && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1"
+              onClick={() => clearSelection(setSelectedTrim)}
+            >
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="engine" className="mb-2 block">
+            Engine
+          </Label>
+          <Select value={selectedEngine} onValueChange={setSelectedEngine}>
+            <SelectTrigger id="engine" className="w-full">
+              <SelectValue placeholder="Select Engine" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-">Any Engine</SelectItem>
+              {engines.map((engine) => (
+                <SelectItem key={engine.id} value={engine.name}>
+                  {engine.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedEngine && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1"
+              onClick={() => clearSelection(setSelectedEngine)}
+            >
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="body" className="mb-2 block">
+            Body
+          </Label>
+          <Select value={selectedBody} onValueChange={setSelectedBody}>
+            <SelectTrigger id="body" className="w-full">
+              <SelectValue placeholder="Select Body" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="-">Any Body</SelectItem>
+              {bodies.map((body) => (
+                <SelectItem key={body.id} value={body.name}>
+                  {body.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedBody && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1"
+              onClick={() => clearSelection(setSelectedBody)}
+            >
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <Label htmlFor="search" className="mb-2 block">
+          Search
+        </Label>
+        <div className="flex">
+          <Input
+            id="search"
+            type="text"
+            placeholder="Search cars..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-grow"
+          />
+          <Button onClick={handleSearch} disabled={loading} className="ml-2">
+            {loading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Search className="w-4 h-4 mr-2" />
+            )}
+            Search
+          </Button>
+        </div>
+      </div>
+
+      {error && <div className="text-red-500 text-center mb-8">{error}</div>}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+        {cars.map((car) => (
+          <div
+            key={car.id}
+            className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg"
+          >
+            <Image
+              src={`/placeholder.svg?height=200&width=300`}
+              alt={`${car.make} ${car.model}`}
+              width={300}
+              height={200}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-gray-100">
+                {car.make} {car.model} {car.year}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                {car.trim} {car.engine} {car.body}
+              </p>
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" /> View Details
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto" />
+        </div>
+      ) : (
         <div className="text-center">
           <Button
             size="lg"
-            className={`${
-              darkMode
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            } text-white font-semibold px-8 py-4 text-lg`}
+            onClick={loadMore}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 text-lg"
           >
             Load More
           </Button>
         </div>
-      </main>
-      <Footer darkMode={darkMode} />
+      )}
     </div>
   );
 }

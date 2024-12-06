@@ -38,8 +38,9 @@ export default function AH() {
   const handleLogout = () => {
     // Implement logout logic here
     console.log("Logging out...");
+    localStorage.removeItem("authenticated");
     // After logout, redirect to login page
-    router.push("/admin/login");
+    router.push("/admin/signin");
   };
 
   return (
