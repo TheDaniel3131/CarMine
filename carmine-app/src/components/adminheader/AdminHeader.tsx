@@ -76,7 +76,7 @@ export default function AH() {
                 (item) => (
                   <Link
                     key={item}
-                    href={`/admin/${item.toLowerCase()}`}
+                    href={`/admin/accessed/${item.toLowerCase()}`}
                     className={`text-lg font-semibold ${
                       darkMode
                         ? "text-gray-300 hover:text-blue-400"

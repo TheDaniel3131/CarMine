@@ -41,7 +41,8 @@ export default function SigninPage() {
         const data = await response.json();
         console.log("Login successful:", data);
         // Use the login function from AuthContext
-        login(data.token); // Assuming the API returns a token
+        login(data.token, { email: data.email }); // Assuming the API returns a token and email
+        localStorage.setItem("userEmail", data.email); // Save email in local storage
         // Redirect to the homepage or another authenticated page
         router.push("/");
       } else {

@@ -38,7 +38,7 @@ export default function ContactUs() {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://your-api-url/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -83,6 +83,7 @@ export default function ContactUs() {
         </h1>
 
         <div className="max-w-4xl mx-auto mb-16 grid md:grid-cols-2 gap-12">
+          {/* Contact Form */}
           <div>
             <h2
               className={`text-3xl font-bold mb-6 ${
@@ -163,76 +164,72 @@ export default function ContactUs() {
                 Send Message
               </Button>
             </form>
+          </div>
+
+          {/* Contact Information */}
+          <div>
+            <h2
+              className={`text-3xl font-bold mb-6 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Contact Information
+            </h2>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <Mail
+                  className={`w-6 h-6 ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                />
+                <span className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                  contact@carmine.com
+                </span>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Phone
+                  className={`w-6 h-6 ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                />
+                <span className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                  +1 (555) 123-4567
+                </span>
+              </div>
+              <div className="flex items-center space-x-4">
+                <MapPin
+                  className={`w-6 h-6 ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                />
+                <span className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                  123 CarMine Street, Auto City, AC 12345
+                </span>
+              </div>
             </div>
-            <div>
-              <h2
-                className={`text-3xl font-bold mb-6 ${
+            <div className="mt-8">
+              <h3
+                className={`text-2xl font-bold mb-4 ${
                   darkMode ? "text-gray-100" : "text-gray-800"
                 }`}
               >
-                Contact Information
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Mail
-                    className={`w-6 h-6 ${
-                      darkMode ? "text-blue-400" : "text-blue-600"
-                    }`}
-                  />
-                  <span
-                    className={darkMode ? "text-gray-300" : "text-gray-600"}
-                  >
-                    contact@carmine.com
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Phone
-                    className={`w-6 h-6 ${
-                      darkMode ? "text-blue-400" : "text-blue-600"
-                    }`}
-                  />
-                  <span
-                    className={darkMode ? "text-gray-300" : "text-gray-600"}
-                  >
-                    +1 (555) 123-4567
-                  </span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <MapPin
-                    className={`w-6 h-6 ${
-                      darkMode ? "text-blue-400" : "text-blue-600"
-                    }`}
-                  />
-                  <span
-                    className={darkMode ? "text-gray-300" : "text-gray-600"}
-                  >
-                    123 CarMine Street, Auto City, AC 12345
-                  </span>
-                </div>
-              </div>
-              <div className="mt-8">
-                <h3
-                  className={`text-2xl font-bold mb-4 ${
-                    darkMode ? "text-gray-100" : "text-gray-800"
-                  }`}
-                >
-                  Office Hours
-                </h3>
-                <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
-                  Monday - Friday: 9:00 AM - 6:00 PM
-                </p>
-                <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
-                  Saturday: 10:00 AM - 4:00 PM
-                </p>
-                <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
-                  Sunday: Closed
-                </p>
-              </div>
+                Office Hours
+              </h3>
+              <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                Monday - Friday: 9:00 AM - 6:00 PM
+              </p>
+              <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                Saturday: 10:00 AM - 4:00 PM
+              </p>
+              <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
+                Sunday: Closed
+              </p>
             </div>
           </div>
-        </main>
+        </div>
+      </main>
 
-        <Footer darkMode={darkMode} />
-      </div>
-    );
+      <Footer darkMode={darkMode} />
+    </div>
+  );
 }
