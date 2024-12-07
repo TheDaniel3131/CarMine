@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['auto.dev'],
+        domains: [
+            'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+            'auto.dev',
+        ],
     },
-}
+};
 
-export default nextConfig
+export default nextConfig;

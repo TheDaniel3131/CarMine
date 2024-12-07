@@ -71,7 +71,7 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
             </span>
           </Link>
           <div className="hidden md:flex space-x-8">
-            {['Buy', 'Sell', 'Marketplace', 'Rent'].map((item) => (
+            {['Marketplace', 'Sell', 'Rent', 'Contact'].map((item) => (
               <Link key={item} href={`/${item.toLowerCase()}`} className={`text-lg font-semibold ${darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors`}>
                 {item}
               </Link>
@@ -121,7 +121,7 @@ export default function Header({ darkMode, toggleDarkMode, unreadMessages }: Hea
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`w-48 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                {['Buy', 'Sell', 'Marketplace', 'Rent'].map((item) => (
+                {['Marketplace', 'Sell', 'Rent', 'Contact'].map((item) => (
                   <DropdownMenuItem key={item}>
                     <Link
                       href={`/${item.toLowerCase().replace(' ', '')}`}
