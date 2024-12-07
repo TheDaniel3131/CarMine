@@ -33,7 +33,7 @@ interface Category {
   makes: string[];
 }
 
-const API_KEY = "ZrQEPSkKZGFuaWVscG9oMzEzMUBnbWFpbC5jb20=";
+const API_KEY = "ZrQEPSkKZGFuYWVscG9oMzEzMUBnbWFpbC5jb20=";
 
 const categories: Category[] = [
   {
@@ -79,12 +79,28 @@ export default function MarketplacePage() {
       if (searchTerm) url += `&search=${searchTerm}`;
 
       const response = await fetch(url);
+      
       if (!response.ok) {
         throw new Error("Failed to fetch cars");
       }
+      
       const data = await response.json();
+      
+      // Transform the API response to match your Car interface
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const transformedCars: Car[] = data.records.map((car: any) => ({
+        id: car.id.toString(),
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        trim: car.trim,
+        price: parseFloat(car.price.replace('$', '').replace(',', '')),
+        mileage: parseInt(car.mileage.replace(' Miles', '').replace(',', '')),
+        image_url: car.primaryPhotoUrl
+      }));
+
       setCars((prevCars) =>
-        page === 1 ? data.listings || [] : [...prevCars, ...(data.listings || [])]
+        page === 1 ? transformedCars : [...prevCars, ...transformedCars]
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load cars");
