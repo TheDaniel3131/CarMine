@@ -29,7 +29,7 @@ export default function Footer({ darkMode }: FooterProps) {
           <div>
             <h3 className="text-2xl font-bold mb-4">Services</h3>
             <ul className="space-y-2">
-              {['Buy', 'Sell', 'Marketplace', 'Rent'].map((item) => (
+              {['Marketplace', 'Sell', 'Rent'].map((item) => (
                 <li key={item}>
                   <Link href={`/${item.toLowerCase().replace(' ', '')}`} className={`${darkMode ? 'text-gray-300 hover:text-blue-400' : 'text-blue-100 hover:text-white'} transition-colors`}>
                     {item}
