@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-// import { useRouter } from "next/navigation";
 import { Search, Trash, Eye, Reply } from "lucide-react";
 import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
@@ -38,11 +37,11 @@ interface Message {
   email: string;
   subject: string;
   message: string;
-  createdAt: string;
+  submittedAt: string;
+  replied: boolean;
 }
 
 export default function AdminMessagesPage() {
-  // const router = useRouter();
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
@@ -59,38 +58,12 @@ export default function AdminMessagesPage() {
   }, []);
 
   const fetchMessages = async () => {
+    setLoading(true);
     try {
-      // In a real application, this would be an API call
-      const dummyMessages: Message[] = [
-        {
-          id: "1",
-          name: "John Doe",
-          email: "john@example.com",
-          subject: "Inquiry about SUVs",
-          message:
-            "I am interested in your SUV models. Can you provide more information about available options and pricing?",
-          createdAt: "2023-06-01T10:00:00Z",
-        },
-        {
-          id: "2",
-          name: "Jane Smith",
-          email: "jane@example.com",
-          subject: "Feedback on service",
-          message:
-            "I wanted to share my experience with your service department. The staff was very professional and helpful.",
-          createdAt: "2023-06-02T14:30:00Z",
-        },
-        {
-          id: "3",
-          name: "Mike Johnson",
-          email: "mike@example.com",
-          subject: "Test drive request",
-          message:
-            "I would like to schedule a test drive for the new sedan model you have. What are the available time slots?",
-          createdAt: "2023-06-03T09:15:00Z",
-        },
-      ];
-      setMessages(dummyMessages);
+      const response = await fetch("/api/admin/contact");
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      const data: Message[] = await response.json();
+      setMessages(data);
     } catch (error) {
       console.error("Error fetching messages:", error);
     } finally {
@@ -101,7 +74,10 @@ export default function AdminMessagesPage() {
   const deleteMessage = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this message?")) {
       try {
-        // In a real application, this would be an API call
+        const response = await fetch(`/api/admin/contact/${id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Failed to delete message");
         setMessages(messages.filter((message) => message.id !== id));
       } catch (error) {
         console.error("Error deleting message:", error);
@@ -111,11 +87,15 @@ export default function AdminMessagesPage() {
 
   const sendReply = async (messageId: string, replyContent: string) => {
     try {
-      // In a real application, this would be an API call to send the reply
-      console.log(`Sending reply to message ${messageId}: ${replyContent}`);
-      // You might want to update the message status or add the reply to the message object
+      const response = await fetch("/api/admin/contact/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reply", messageId, replyContent }),
+      });
+      if (!response.ok) throw new Error("Failed to send reply");
       setIsReplyDialogOpen(false);
       setReplyContent("");
+      fetchMessages();
     } catch (error) {
       console.error("Error sending reply:", error);
     }
@@ -147,7 +127,7 @@ export default function AdminMessagesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-bold">
-                  Message Management
+                  Contact Message Management
                 </CardTitle>
                 <CardDescription
                   className={darkMode ? "text-gray-300" : "text-gray-600"}
@@ -178,30 +158,12 @@ export default function AdminMessagesPage() {
             >
               <Table>
                 <TableHeader>
-                  <TableRow
-                    className={
-                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                    }
-                  >
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Name
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Email
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Subject
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Date
-                    </TableHead>
-                    <TableHead
-                      className={`text-right ${
-                        darkMode ? "text-gray-300" : ""
-                      }`}
-                    >
-                      Actions
-                    </TableHead>
+                  <TableRow>
+                    <TableHead className="w-1/5">Name</TableHead>
+                    <TableHead className="w-1/4">Email</TableHead>
+                    <TableHead className="w-1/5">Date</TableHead>
+                    <TableHead className="w-1/6">Status</TableHead>
+                    <TableHead className="w-1/6 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -219,25 +181,26 @@ export default function AdminMessagesPage() {
                     </TableRow>
                   ) : (
                     filteredMessages.map((message) => (
-                      <TableRow
-                        key={message.id}
-                        className={
-                          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                        }
-                      >
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                      <TableRow key={message.id}>
+                        <TableCell className="font-medium">
                           {message.name}
                         </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {message.email}
+                        <TableCell>{message.email}</TableCell>
+                        <TableCell>
+                          {new Date(message.submittedAt).toLocaleDateString()}
                         </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {message.subject}
+                        <TableCell>
+                          <span
+                            className={`px-2 py-1 rounded-full text-sm ${
+                              message.replied
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {message.replied ? "Replied" : "Pending"}
+                          </span>
                         </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {new Date(message.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right space-x-2">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -246,12 +209,7 @@ export default function AdminMessagesPage() {
                               setIsViewDialogOpen(true);
                             }}
                           >
-                            <Eye
-                              className={`h-4 w-4 ${
-                                darkMode ? "text-gray-300" : ""
-                              }`}
-                            />
-                            <span className="sr-only">View message</span>
+                            <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -260,25 +218,16 @@ export default function AdminMessagesPage() {
                               setSelectedMessage(message);
                               setIsReplyDialogOpen(true);
                             }}
+                            disabled={message.replied}
                           >
-                            <Reply
-                              className={`h-4 w-4 ${
-                                darkMode ? "text-gray-300" : ""
-                              }`}
-                            />
-                            <span className="sr-only">Reply to message</span>
+                            <Reply className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => deleteMessage(message.id)}
                           >
-                            <Trash
-                              className={`h-4 w-4 ${
-                                darkMode ? "text-gray-300" : ""
-                              }`}
-                            />
-                            <span className="sr-only">Delete message</span>
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -315,14 +264,6 @@ export default function AdminMessagesPage() {
               </div>
               <div>
                 <Label className={darkMode ? "text-gray-300" : ""}>
-                  Subject
-                </Label>
-                <div className={darkMode ? "text-gray-100" : ""}>
-                  {selectedMessage.subject}
-                </div>
-              </div>
-              <div>
-                <Label className={darkMode ? "text-gray-300" : ""}>
                   Message
                 </Label>
                 <div
@@ -336,7 +277,7 @@ export default function AdminMessagesPage() {
               <div>
                 <Label className={darkMode ? "text-gray-300" : ""}>Date</Label>
                 <div className={darkMode ? "text-gray-100" : ""}>
-                  {new Date(selectedMessage.createdAt).toLocaleString()}
+                  {new Date(selectedMessage.submittedAt).toLocaleString()}
                 </div>
               </div>
             </div>
@@ -375,12 +316,12 @@ export default function AdminMessagesPage() {
                   </div>
                 </div>
                 <div>
-                    <Label
+                  <Label
                     htmlFor="reply"
                     className={`mb-4 block ${darkMode ? "text-gray-300" : ""}`}
-                    >
+                  >
                     Your Reply
-                    </Label>
+                  </Label>
                   <Textarea
                     id="reply"
                     value={replyContent}
