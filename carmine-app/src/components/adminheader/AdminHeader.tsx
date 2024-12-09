@@ -59,7 +59,7 @@ export default function AH() {
         <div className="container mx-auto px-4 py-6">
           <nav className="flex justify-between items-center">
             <Link
-              href="/admin/dashboard"
+              href="/admin/accessed/cars?authenticated=true"
               className="flex items-center space-x-2"
             >
               <Car className="w-10 h-10 text-blue-600 dark:text-blue-400" />
@@ -72,21 +72,19 @@ export default function AH() {
               </span>
             </Link>
             <div className="hidden md:flex space-x-8">
-              {["Dashboard", "Cars", "Messages", "Users"].map(
-                (item) => (
-                  <Link
-                    key={item}
-                    href={`/admin/accessed/${item.toLowerCase()}`}
-                    className={`text-lg font-semibold ${
-                      darkMode
-                        ? "text-gray-300 hover:text-blue-400"
-                        : "text-gray-700 hover:text-blue-600"
-                    } transition-colors`}
-                  >
-                    {item}
-                  </Link>
-                )
-              )}
+              {["Cars", "Messages", "Users"].map((item) => (
+                <Link
+                  key={item}
+                  href={`/admin/accessed/${item.toLowerCase()}?authenticated=true`}
+                  className={`text-lg font-semibold ${
+                    darkMode
+                      ? "text-gray-300 hover:text-blue-400"
+                      : "text-gray-700 hover:text-blue-600"
+                  } transition-colors`}
+                >
+                  {item}
+                </Link>
+              ))}
             </div>
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -141,33 +139,31 @@ export default function AH() {
                       : "bg-white border-gray-200"
                   }`}
                 >
-                  {["Dashboard", "Cars", "Users", "Reports", "Logout"].map(
-                    (item) => (
-                      <DropdownMenuItem key={item}>
-                        <Link
-                          href={
-                            item === "Logout"
-                              ? "#"
-                              : `/admin/${item.toLowerCase()}`
-                          }
-                          className={`flex w-full font-semibold transition-colors duration-300 ${
-                            darkMode
-                              ? "text-white hover:text-blue-400"
-                              : "text-gray-900 hover:text-blue-600"
-                          }`}
-                          style={{
-                            padding: "0.5rem 1rem",
-                            borderRadius: "0.375rem",
-                            transition:
-                              "background-color 0.3s ease, color 0.3s ease",
-                          }}
-                          onClick={item === "Logout" ? handleLogout : undefined}
-                        >
-                          {item}
-                        </Link>
-                      </DropdownMenuItem>
-                    )
-                  )}
+                  {["Cars", "Users", "Reports", "Logout"].map((item) => (
+                    <DropdownMenuItem key={item}>
+                      <Link
+                        href={
+                          item === "Logout"
+                            ? "#"
+                            : `/admin/${item.toLowerCase()}`
+                        }
+                        className={`flex w-full font-semibold transition-colors duration-300 ${
+                          darkMode
+                            ? "text-white hover:text-blue-400"
+                            : "text-gray-900 hover:text-blue-600"
+                        }`}
+                        style={{
+                          padding: "0.5rem 1rem",
+                          borderRadius: "0.375rem",
+                          transition:
+                            "background-color 0.3s ease, color 0.3s ease",
+                        }}
+                        onClick={item === "Logout" ? handleLogout : undefined}
+                      >
+                        {item}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

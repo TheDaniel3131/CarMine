@@ -1,9 +1,9 @@
 "use client";
 
-import Link from 'next/link'
+// import Link from 'next/link'
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Search, ShoppingCart, Loader2 } from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Lock} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -24,6 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/components/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+
 
 interface Car {
   id: string;
@@ -76,6 +79,8 @@ export default function MarketplacePage() {
   const [priceRange, setPriceRange] = useState("");
   const [page, setPage] = useState(1);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const toggleDarkMode = useCallback(() => {
     setDarkMode(prev => !prev);
@@ -174,15 +179,27 @@ export default function MarketplacePage() {
     setPage((prevPage) => prevPage + 1);
   }, []);
 
+
+  const handleViewDetails = (carId: string) => {
+    if (isAuthenticated) {
+      router.push(`/marketplace/${carId}`);
+    } else {
+      router.push("/signin");
+    }
+  };
   return (
-    <div className={`min-h-screen ${darkMode ? "dark" : ""} bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100`}>
+    <div
+      className={`min-h-screen ${
+        darkMode ? "dark" : ""
+      } bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100`}
+    >
       <Header
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={0}
       />
 
-      <main className="container mx-auto px-4 py-20 md:py-24">
+      <main className="container mx-auto px-4 py-16 md:py-24">
         <h1 className="text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600 dark:from-blue-400 dark:via-blue-300 dark:to-purple-400">
           Find Your Dream Car
         </h1>
@@ -203,7 +220,9 @@ export default function MarketplacePage() {
                           {category.makes.map((make) => (
                             <Badge
                               key={make}
-                              variant={selectedMake === make ? "default" : "outline"}
+                              variant={
+                                selectedMake === make ? "default" : "outline"
+                              }
                               className="cursor-pointer"
                               onClick={() => handleMakeSelect(make)}
                             >
@@ -221,7 +240,9 @@ export default function MarketplacePage() {
 
           <div className="md:col-span-3">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-8">
-              <Label htmlFor="search" className="mb-2 block">Search</Label>
+              <Label htmlFor="search" className="mb-2 block">
+                Search
+              </Label>
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
                 <Input
                   id="search"
@@ -233,20 +254,27 @@ export default function MarketplacePage() {
                 />
                 <Select onValueChange={(value) => setPriceRange(value)}>
                   <SelectTrigger
-                    className={`w-full md:w-[180px] ${
+                    className={`w-full md:w-[240px] ${
                       darkMode
                         ? "bg-gray-700 text-white"
                         : "bg-gray-100 text-gray-900"
                     }`}
                   >
+                    
                     <SelectValue placeholder="Price Range" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Prices</SelectItem>
                     <SelectItem value="0-10000">$0 - $10,000</SelectItem>
-                    <SelectItem value="10000-20000">$10,000 - $20,000</SelectItem>
-                    <SelectItem value="20000-30000">$20,000 - $30,000</SelectItem>
-                    <SelectItem value="30000-100000">$30,000 - $100,000</SelectItem>
+                    <SelectItem value="10000-20000">
+                      $10,000 - $20,000
+                    </SelectItem>
+                    <SelectItem value="20000-30000">
+                      $20,000 - $30,000
+                    </SelectItem>
+                    <SelectItem value="30000-100000">
+                      $30,000 - $100,000
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <Button
@@ -276,7 +304,9 @@ export default function MarketplacePage() {
                     className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg"
                   >
                     <Image
-                      src={car.image_url || `/placeholder.svg?height=300&width=400`}
+                      src={
+                        car.image_url || `/placeholder.svg?height=300&width=400`
+                      }
                       alt={`${car.make} ${car.model}`}
                       width={400}
                       height={300}
@@ -297,14 +327,22 @@ export default function MarketplacePage() {
                           {car.mileage.toLocaleString()} miles
                         </p>
                       </div>
-                      <Link href={`/marketplace/${car.id}`}>
                       <Button
                         className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => handleViewDetails(car.id)}
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        View Details
+                        {isAuthenticated ? (
+                          <>
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            View Details
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-4 h-4 mr-2" />
+                            Sign In to View
+                          </>
+                        )}
                       </Button>
-                      </Link>
                     </div>
                   </div>
                 ))}

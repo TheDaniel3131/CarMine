@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +21,22 @@ export default function AdminSigninPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const saveToLocalStorage = (key: string, value: string) => {
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(key, value);
+        // Verify the value was stored
+        const storedValue = window.localStorage.getItem(key);
+        console.log(`Stored ${key}:`, storedValue);
+        if (storedValue !== value) {
+          console.error("Storage verification failed");
+        }
+      } catch (error) {
+        console.error("localStorage error:", error);
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -37,9 +52,24 @@ export default function AdminSigninPage() {
       setLoading(false);
 
       if (response.ok) {
-        // Set the authenticated flag in localStorage
-        localStorage.setItem("authenticated", "true");
-        // Redirect to the admin area
+        const data = await response.json();
+        console.log("Admin login successful:", data);
+
+        // Store the authentication state
+        saveToLocalStorage("authenticated", "true");
+
+        // Store the admin email
+        if (email) {
+          saveToLocalStorage("adminEmail", email);
+        }
+
+        // Double-check storage before redirect
+        const storedAuth = window.localStorage.getItem("authenticated");
+        const storedEmail = window.localStorage.getItem("adminEmail");
+        console.log("Verification - Stored auth:", storedAuth);
+        console.log("Verification - Stored admin email:", storedEmail);
+
+        // Redirect to the admin area without the query parameter
         router.push("/admin/accessed/cars?authenticated=true");
       } else {
         const errorData = await response.json();

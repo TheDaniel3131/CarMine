@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/components/contexts/AuthContext";
-import '../globals.css';
+import "../globals.css";
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -23,6 +23,22 @@ export default function SigninPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
+
+  const saveToLocalStorage = (key: string, value: string) => {
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(key, value);
+        // Verify the value was stored
+        const storedValue = window.localStorage.getItem(key);
+        console.log(`Stored ${key}:`, storedValue);
+        if (storedValue !== value) {
+          console.error("Storage verification failed");
+        }
+      } catch (error) {
+        console.error("localStorage error:", error);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,17 +53,27 @@ export default function SigninPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         console.log("Login successful:", data);
-        // Use the login function from AuthContext
-        login(data.token, { email: data.email }); // Assuming the API returns a token and email
-        localStorage.setItem("userEmail", data.email); // Save email in local storage
-        // Redirect to the homepage or another authenticated page
+
+        // First store the email
+        if (email) {
+          saveToLocalStorage("userEmail", email);
+        }
+
+        // Then handle the login
+        login(data.token, { email: email });
+
+        // Double-check storage before redirect
+        const storedEmail = window.localStorage.getItem("userEmail");
+        console.log("Verification - Stored email:", storedEmail);
+
+        // Redirect to homepage
         router.push("/");
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed");
+        setError(data.message || "Login failed");
       }
     } catch (err) {
       console.error("Login error:", err);

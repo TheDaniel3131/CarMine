@@ -1,38 +1,57 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Search, Car, ShoppingBag, Key, Zap, Star, Shield, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import Link from 'next/link'
-import './globals.css'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  Car,
+  ShoppingBag,
+  Key,
+  Zap,
+  Star,
+  Shield,
+  Loader2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+import "./globals.css";
 
 export default function CarMine() {
-  const [darkMode, setDarkMode] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [unreadMessages] = useState(2)
+  const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [unreadMessages] = useState(2);
+  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false)
-    }, 3000)
+      setLoading(false);
+    }, 3000);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark')
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.remove("dark");
     }
-  }, [darkMode])
+  }, [darkMode]);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
-  }
+    setDarkMode(!darkMode);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/marketplace?search=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -41,7 +60,7 @@ export default function CarMine() {
           <Loader2 className="w-16 h-16 animate-spin mx-auto" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -70,21 +89,25 @@ export default function CarMine() {
         </h1>
 
         <div className="max-w-4xl mx-auto mb-20">
-          <div
+          <form
+            onSubmit={handleSearch}
             className={`flex items-center space-x-2 ${
               darkMode ? "bg-gray-800" : "bg-white"
             } p-2 rounded-full shadow-lg`}
           >
             <Input
               type="text"
-              placeholder="Search cars, parts, or rentals..."
-              className={`flex-grow bg-transparent border-none ${
+              placeholder="Search New Or Rental Cars Here..."
+              className={`flex-grow bg-transparent border-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
                 darkMode
                   ? "text-gray-100 placeholder-gray-400"
                   : "text-gray-900 placeholder-gray-500"
               } text-lg`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Button
+              type="submit"
               className={`${
                 darkMode
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
@@ -93,24 +116,24 @@ export default function CarMine() {
             >
               <Search className="w-5 h-5 mr-2" /> Search
             </Button>
-          </div>
+          </form>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-24 py-16">
           {[
             {
               icon: Car,
-              title: "Buy & Sell Cars",
+              title: "Buy Your Dream Cars",
               description:
-                "Find your dream car or sell your current vehicle with ease. Our advanced matching algorithm ensures the best deals.",
+          "Thinking of a dream car that you always wanted to buy? Browse our wide range of vehicles to find one that suits you. From SUVs to sedans, we've got you all!",
               action: "Explore Market",
               link: "/buy",
             },
             {
               icon: ShoppingBag,
-              title: "Parts Marketplace",
+              title: "Sell Your Own Cars",
               description:
-                "Shop for new and used cars, car autoparts from verified and trusted sellers. Guaranteed verified parts and secure transactions on hand!",
+          "CarMine allows you to sell your car with ease with our streamlined process in just minutes! Upload your photos, set your price and your car details. You are ready to go!",
               action: "Browse Parts",
               link: "/marketplace",
             },
@@ -118,7 +141,7 @@ export default function CarMine() {
               icon: Key,
               title: "Car Rentals",
               description:
-                "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service.",
+          "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and extensive selection of cars.",
               action: "Rent Now",
               link: "/rent",
             },
@@ -126,40 +149,40 @@ export default function CarMine() {
             <div
               key={index}
               className={`${
-                darkMode ? "bg-gray-800" : "bg-white"
+          darkMode ? "bg-gray-800" : "bg-white"
               } p-8 rounded-2xl shadow-xl transform transition-transform duration-500 hover:scale-105`}
             >
               <div className="flex justify-center mb-6">
-                <item.icon
-                  className={`w-20 h-20 ${
-                    darkMode ? "text-blue-400" : "text-blue-600"
-                  }`}
-                />
+          <item.icon
+            className={`w-20 h-20 ${
+              darkMode ? "text-blue-400" : "text-blue-600"
+            }`}
+          />
               </div>
               <h2
-                className={`text-2xl font-bold mb-4 text-center ${
-                  darkMode ? "text-gray-100" : "text-gray-800"
-                }`}
+          className={`text-2xl font-bold mb-4 text-center ${
+            darkMode ? "text-gray-100" : "text-gray-800"
+          }`}
               >
-                {item.title}
+          {item.title}
               </h2>
               <p
-                className={`${
-                  darkMode ? "text-gray-300" : "text-gray-600"
-                } mb-6 text-center`}
+          className={`${
+            darkMode ? "text-gray-300" : "text-gray-600"
+          } mb-6 text-center`}
               >
-                {item.description}
+          {item.description}
               </p>
               <Link href={item.link}>
-                <Button
-                  className={`w-full ${
-                    darkMode
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                      : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                  } text-white text-lg font-semibold py-6`}
-                >
-                  {item.action}
-                </Button>
+          <Button
+            className={`w-full ${
+              darkMode
+                ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            } text-white text-lg font-semibold py-6`}
+          >
+            {item.action}
+          </Button>
               </Link>
             </div>
           ))}
@@ -240,21 +263,21 @@ export default function CarMine() {
             Get exclusive deals, automotive news, and connect with fellow car
             enthusiasts.
           </p>
-            <div className="flex justify-center">
+          <div className="flex justify-center">
             <Link href="/signup">
               <Button
-              size="lg"
-              variant="secondary"
-              className={`${
-                darkMode
-                ? "bg-gray-800 text-blue-400 hover:bg-gray-950"
-                : "bg-white text-blue-600 hover:bg-gray-100"
-              } font-semibold px-8 py-6 text-xl`}
+                size="lg"
+                variant="secondary"
+                className={`${
+                  darkMode
+                    ? "bg-gray-800 text-blue-400 hover:bg-gray-950"
+                    : "bg-white text-blue-600 hover:bg-gray-100"
+                } font-semibold px-8 py-6 text-xl`}
               >
-              Sign Up Now
+                Sign Up Now
               </Button>
             </Link>
-            </div>
+          </div>
         </section>
 
         <section className="mb-24">
@@ -322,4 +345,3 @@ export default function CarMine() {
     </div>
   );
 }
-

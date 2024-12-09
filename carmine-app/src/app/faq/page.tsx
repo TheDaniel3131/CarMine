@@ -10,6 +10,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import Link from 'next/link'
 
 export default function FAQ() {
     const [darkMode, setDarkMode] = useState(false)
@@ -115,18 +116,13 @@ export default function FAQ() {
               If you couldn&apos;t find the answer to your question, feel free
               to contact us.
             </p>
-            <Button
-              className={`${
-                darkMode
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } text-white`}
-            >
+           <Link href="/contact">
+            <Button className={darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}>
               Contact Support
-            </Button>
+            </Button>           
+           </Link>
           </div>
         </main>
-
         <Footer darkMode={darkMode} />
       </div>
     );

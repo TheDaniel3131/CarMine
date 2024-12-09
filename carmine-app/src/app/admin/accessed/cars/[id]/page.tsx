@@ -141,7 +141,7 @@ export default function AdminCarPage({ params }: { params: { id: string } }) {
               </div>
               <Button
                 variant="outline"
-                onClick={() => router.push("/admin/cars")}
+                onClick={() => router.push("/admin/accessed/cars?authenticated=true")}
                 className={
                   darkMode
                     ? "bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900"

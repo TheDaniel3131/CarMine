@@ -34,7 +34,23 @@ export default function ContactUs() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.message) {
+      alert("All fields are required.");
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
     e.preventDefault();
 
     try {

@@ -162,7 +162,7 @@ export default function AdminCarsPage() {
                 </CardDescription>
               </div>
               <Button
-                onClick={() => router.push("/admin/cars/new")}
+                onClick={() => router.push("/admin/accessed/cars/new?authenticated=true")}
                 className={
                   darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""
                 }
