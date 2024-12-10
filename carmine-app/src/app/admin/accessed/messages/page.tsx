@@ -76,11 +76,40 @@ export default function AdminMessagesPage() {
       try {
         const response = await fetch(`/api/admin/contact/${id}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
-        if (!response.ok) throw new Error("Failed to delete message");
-        setMessages(messages.filter((message) => message.id !== id));
+
+        // Log the raw response for debugging
+        const responseText = await response.text();
+        console.log("Delete response:", {
+          status: response.status,
+          text: responseText,
+        });
+
+        // Try to parse the response as JSON if it's not empty
+        let result;
+        try {
+          result = responseText ? JSON.parse(responseText) : { success: true };
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          throw new Error("Invalid response from server");
+        }
+
+        if (response.ok) {
+          setMessages(messages.filter((message) => message.id !== id));
+          return;
+        } else {
+          throw new Error(result.message || `Server error: ${response.status}`);
+        }
       } catch (error) {
         console.error("Error deleting message:", error);
+        alert(
+          error instanceof Error
+            ? `Error: ${error.message}`
+            : "Failed to delete message. Please try again."
+        );
       }
     }
   };
