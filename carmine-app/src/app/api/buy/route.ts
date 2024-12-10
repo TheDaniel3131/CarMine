@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic"; // Ensure dynamic route handling
 export async function GET() {
   try {
     const client = await pool.connect();
-    const query = `SELECT car_id, car_make, car_model, car_year, car_mileage, car_price, car_description, car_quantity, car_image FROM car;`;
+    const query = `SELECT car_id, car_make, car_model, car_year, car_mileage, car_price, car_description, car_quantity, car_image, is_rentable FROM car;`;
     const result = await client.query(query);
     client.release();
 

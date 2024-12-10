@@ -24,12 +24,12 @@ import { Input } from "@/components/ui/input";
 import { useTheme } from "@/components/ThemeContext";
 
 interface Car {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  status: "available" | "sold" | "maintenance";
+  car_id: string;
+  car_make: string;
+  car_model: string;
+  car_year: number;
+  car_price: number;
+  is_rentable: boolean;
 }
 
 export default function AdminCarsPage() {
@@ -40,51 +40,15 @@ export default function AdminCarsPage() {
   const [search, setSearch] = React.useState("");
   const { darkMode } = useTheme();
 
+  // Fetch car data from the buy/route.ts API
   const fetchCars = async () => {
     try {
-      const dummyCars: Car[] = [
-        {
-          id: "1",
-          make: "Toyota",
-          model: "Camry",
-          year: 2022,
-          price: 25000,
-          status: "available",
-        },
-        {
-          id: "2",
-          make: "Honda",
-          model: "Civic",
-          year: 2023,
-          price: 22000,
-          status: "sold",
-        },
-        {
-          id: "3",
-          make: "Ford",
-          model: "F-150",
-          year: 2021,
-          price: 35000,
-          status: "maintenance",
-        },
-        {
-          id: "4",
-          make: "Tesla",
-          model: "Model 3",
-          year: 2023,
-          price: 45000,
-          status: "available",
-        },
-        {
-          id: "5",
-          make: "Chevrolet",
-          model: "Malibu",
-          year: 2022,
-          price: 23000,
-          status: "available",
-        },
-      ];
-      setCars(dummyCars);
+      const response = await fetch("/api/buy"); // Ensure this matches your API route path
+      if (!response.ok) {
+        throw new Error("Failed to fetch car data");
+      }
+      const data = await response.json();
+      setCars(data);
     } catch (error) {
       console.error("Error fetching cars:", error);
     } finally {
@@ -113,6 +77,7 @@ export default function AdminCarsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
+        {/* Add your loading spinner or animation here */}
       </div>
     );
   }
@@ -120,7 +85,7 @@ export default function AdminCarsPage() {
   const deleteCar = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this car?")) {
       try {
-        setCars(cars.filter((car) => car.id !== id));
+        setCars(cars.filter((car) => car.car_id !== id));
       } catch (error) {
         console.error("Error deleting car:", error);
       }
@@ -129,11 +94,13 @@ export default function AdminCarsPage() {
 
   const filteredCars = cars.filter(
     (car) =>
-      car.make.toLowerCase().includes(search.toLowerCase()) ||
-      car.model.toLowerCase().includes(search.toLowerCase()) ||
-      car.year.toString().includes(search)
-  );
-
+      car.car_make.toLowerCase().includes(search.toLowerCase()) ||
+      car.car_model.toLowerCase().includes(search.toLowerCase()) ||
+      car.car_year.toString().includes(search) ||
+      car.car_price.toString().includes(search) ||
+      (search.toString().toLowerCase().includes('rentable') && car.is_rentable === true) ||
+      (search.toString().toLowerCase().includes('non-rentable') && car.is_rentable === false)
+    );
   return (
     <div
       className={`flex flex-col min-h-screen ${
@@ -152,9 +119,7 @@ export default function AdminCarsPage() {
           <CardHeader className="py-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl font-bold">
-                  Car Management
-                </CardTitle>
+                <CardTitle className="text-xl font-bold">Car Management</CardTitle>
                 <CardDescription
                   className={darkMode ? "text-gray-300" : "text-gray-600"}
                 >
@@ -163,9 +128,7 @@ export default function AdminCarsPage() {
               </div>
               <Button
                 onClick={() => router.push("/admin/accessed/cars/new?authenticated=true")}
-                className={
-                  darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""
-                }
+                className={darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New Car
@@ -180,46 +143,21 @@ export default function AdminCarsPage() {
                   placeholder="Search cars..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className={`pl-8 ${
-                    darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
-                  }`}
+                  className={`pl-8 ${darkMode ? "bg-gray-700 text-gray-100" : "bg-white"}`}
                 />
               </div>
             </div>
-            <div
-              className={`rounded-md border ${
-                darkMode ? "border-gray-700" : "border-gray-200"
-              }`}
-            >
+            <div className={`rounded-md border ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
               <Table>
                 <TableHeader>
                   <TableRow
-                    className={
-                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                    }
+                    className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}
                   >
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Make
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Model
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Year
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Price
-                    </TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>
-                      Status
-                    </TableHead>
-                    <TableHead
-                      className={`text-right ${
-                        darkMode ? "text-gray-300" : ""
-                      }`}
-                    >
-                      Actions
-                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>Make</TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>Model</TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>Year</TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>Price</TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -238,60 +176,39 @@ export default function AdminCarsPage() {
                   ) : (
                     filteredCars.map((car) => (
                       <TableRow
-                        key={car.id}
-                        className={
-                          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                        }
+                        key={car.car_id}
+                        className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}
                       >
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_make}</TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_model}</TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_year}</TableCell>
                         <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {car.make}
-                        </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {car.model}
-                        </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          {car.year}
-                        </TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>
-                          ${car.price.toLocaleString()}
+                          ${car.car_price.toLocaleString()}
                         </TableCell>
                         <TableCell className={darkMode ? "text-gray-300" : ""}>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              car.status === "available"
-                                ? "bg-green-200 text-green-800"
-                                : car.status === "sold"
-                                ? "bg-red-200 text-red-800"
-                                : "bg-yellow-200 text-yellow-800"
+                              car.is_rentable ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
                             }`}
                           >
-                            {car.status.charAt(0).toUpperCase() +
-                              car.status.slice(1)}
+                            {car.is_rentable ? "Rentable" : "Non-Rentable"}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => router.push(`/admin/cars/${car.id}`)}
+                            onClick={() => router.push(`/admin/cars/${car.car_id}`)}
                           >
-                            <Edit
-                              className={`h-4 w-4 ${
-                                darkMode ? "text-gray-300" : ""
-                              }`}
-                            />
+                            <Edit className={darkMode ? "text-gray-300" : ""} />
                             <span className="sr-only">Edit car</span>
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => deleteCar(car.id)}
+                            onClick={() => deleteCar(car.car_id)}
                           >
-                            <Trash
-                              className={`h-4 w-4 ${
-                                darkMode ? "text-gray-300" : ""
-                              }`}
-                            />
+                            <Trash className={darkMode ? "text-gray-300" : ""} />
                             <span className="sr-only">Delete car</span>
                           </Button>
                         </TableCell>
