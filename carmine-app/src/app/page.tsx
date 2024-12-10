@@ -141,7 +141,7 @@ export default function CarMine() {
               icon: Key,
               title: "Car Rentals",
               description:
-          "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and extensive selection of cars.",
+          "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and car selections.",
               action: "Rent Now",
               link: "/rent",
             },
