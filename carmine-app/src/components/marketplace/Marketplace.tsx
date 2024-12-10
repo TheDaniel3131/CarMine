@@ -1,9 +1,8 @@
 "use client";
 
-// import Link from 'next/link'
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Search, ShoppingCart, Loader2, Lock} from 'lucide-react';
+import { Search, ShoppingCart, Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -13,7 +12,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -24,9 +23,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useAuth } from "@/components/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-
 
 interface Car {
   id: string;
@@ -37,6 +46,7 @@ interface Car {
   price: number;
   mileage: number;
   image_url: string;
+  listed_date?: string; // Added for sorting by date
 }
 
 interface Category {
@@ -49,25 +59,30 @@ const API_KEY = "ZrQEPSkKZGFuYWVscG9oMzEzMUBnbWFpbC5jb20=";
 const categories: Category[] = [
   {
     name: "Luxury",
-    makes: ["BMW", "Mercedes-Benz", "Audi", "Lexus", "Porsche", "Tesla"]
+    makes: ["BMW", "Mercedes-Benz", "Audi", "Lexus", "Porsche", "Tesla"],
   },
   {
     name: "Sports",
-    makes: ["Ferrari", "Lamborghini", "Porsche", "Chevrolet", "Dodge"]
+    makes: ["Ferrari", "Lamborghini", "Porsche", "Chevrolet", "Dodge"],
   },
   {
     name: "SUV & Crossover",
-    makes: ["Honda", "Toyota", "Ford", "Jeep", "Subaru"]
+    makes: ["Honda", "Toyota", "Ford", "Jeep", "Subaru"],
   },
   {
     name: "Economy",
-    makes: ["Toyota", "Honda", "Hyundai", "Kia", "Volkswagen"]
+    makes: ["Toyota", "Honda", "Hyundai", "Kia", "Volkswagen"],
   },
   {
     name: "Truck",
-    makes: ["Ford", "Chevrolet", "RAM", "GMC", "Toyota"]
-  }
+    makes: ["Ford", "Chevrolet", "RAM", "GMC", "Toyota"],
+  },
 ];
+
+// Get all unique makes for search suggestions
+const allMakes = Array.from(
+  new Set(categories.flatMap((category) => category.makes))
+);
 
 export default function MarketplacePage() {
   const [darkMode, setDarkMode] = useState(false);
@@ -75,44 +90,79 @@ export default function MarketplacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [selectedMake, setSelectedMake] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const [page, setPage] = useState(1);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+  const [isSearchDisabled, setIsSearchDisabled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [sortOption, setSortOption] = useState<string>("newest");
   const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   const toggleDarkMode = useCallback(() => {
-    setDarkMode(prev => !prev);
+    setDarkMode((prev) => !prev);
   }, []);
 
   const fetchCars = useCallback(async () => {
     try {
       setLoading(true);
       let url = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=9`;
-      if (selectedMake) url += `&make=${selectedMake}`;
-      if (searchTerm) url += `&search=${searchTerm}`;
+
+      if (selectedMake) {
+        url += `&make=${selectedMake}`;
+      } else if (searchTerm && !isSearchDisabled) {
+        url += `&make=${searchTerm}`; // Using make instead of search parameter
+      }
+
+      // Add sorting parameters
+      switch (sortOption) {
+        case "newest":
+          url += "&sort=listed_date:desc";
+          break;
+        case "oldest":
+          url += "&sort=listed_date:asc";
+          break;
+        case "price_high":
+          url += "&sort=price:desc";
+          break;
+        case "price_low":
+          url += "&sort=price:asc";
+          break;
+      }
 
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch cars");
       }
-      
+
       const data = await response.json();
-      
-      // Transform the API response to match your Car interface
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const transformedCars: Car[] = data.records.map((car: any) => ({
-        id: car.id.toString(),
-        make: car.make,
-        model: car.model,
-        year: car.year,
-        trim: car.trim,
-        price: parseFloat(car.price.replace('$', '').replace(',', '')),
-        mileage: parseInt(car.mileage.replace(' Miles', '').replace(',', '')),
-        image_url: car.primaryPhotoUrl
-      }));
+
+      const transformedCars: Car[] = data.records.map(
+        (car: {
+          id: string;
+          make: string;
+          model: string;
+          year: number;
+          trim: string;
+          price: string;
+          mileage: string;
+          primaryPhotoUrl: string;
+          listed_date?: string;
+        }) => ({
+          id: car.id.toString(),
+          make: car.make,
+          model: car.model,
+          year: car.year,
+          trim: car.trim,
+          price: parseFloat(car.price.replace("$", "").replace(",", "")),
+          mileage: parseInt(car.mileage.replace(" Miles", "").replace(",", "")),
+          image_url: car.primaryPhotoUrl,
+          listed_date: car.listed_date,
+        })
+      );
 
       setCars((prevCars) =>
         page === 1 ? transformedCars : [...prevCars, ...transformedCars]
@@ -122,35 +172,49 @@ export default function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  }, [page, selectedMake, searchTerm]);
+  }, [page, selectedMake, searchTerm, isSearchDisabled, sortOption]);
 
-  // Filter cars based on search, make, and price range
+  // Update search suggestions when search term changes
+  useEffect(() => {
+    if (searchTerm && !isSearchDisabled) {
+      const suggestions = allMakes.filter((make) =>
+        make.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchSuggestions(suggestions);
+      setIsSearchOpen(true);
+    } else {
+      setSearchSuggestions([]);
+      setIsSearchOpen(false);
+    }
+  }, [searchTerm, isSearchDisabled]);
+
   useEffect(() => {
     let results = cars;
 
-    if (searchTerm) {
+    if (searchTerm && !isSearchDisabled) {
+      const searchLower = searchTerm.toLowerCase();
       results = results.filter(
         (car) =>
-          car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          car.trim.toLowerCase().includes(searchTerm.toLowerCase())
+          car.make.toLowerCase().includes(searchLower) ||
+          car.model.toLowerCase().includes(searchLower) ||
+          car.trim.toLowerCase().includes(searchLower)
       );
     }
 
     if (selectedMake) {
-      results = results.filter((car) => car.make === selectedMake);
+      const makeLower = selectedMake.toLowerCase();
+      results = results.filter((car) => car.make.toLowerCase() === makeLower);
     }
 
     if (priceRange) {
       const [min, max] = priceRange.split("-").map(Number);
       results = results.filter(
-        (car) =>
-          car.price >= (min || 0) && car.price <= (max || Infinity)
+        (car) => car.price >= (min || 0) && car.price <= (max || Infinity)
       );
     }
 
     setFilteredCars(results);
-  }, [cars, searchTerm, selectedMake, priceRange]);
+  }, [cars, searchTerm, selectedMake, priceRange, isSearchDisabled]);
 
   useEffect(() => {
     if (darkMode) {
@@ -165,20 +229,35 @@ export default function MarketplacePage() {
   }, [fetchCars]);
 
   const handleSearch = useCallback(() => {
-    setPage(1);
-    fetchCars();
-  }, [setPage, fetchCars]);
+    if (!isSearchDisabled) {
+      setPage(1);
+      fetchCars();
+    }
+  }, [setPage, fetchCars, isSearchDisabled]);
 
   const handleMakeSelect = useCallback((make: string) => {
-    setSelectedMake(make);
+    setSelectedMake((prevMake) => {
+      if (prevMake === make) {
+        setIsSearchDisabled(false);
+        return "";
+      } else {
+        setIsSearchDisabled(true);
+        return make;
+      }
+    });
     setPage(1);
-    fetchCars();
-  }, [setPage, fetchCars]);
+    setSearchTerm("");
+  }, []);
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    setSearchTerm(suggestion);
+    setIsSearchOpen(false);
+    handleSearch();
+  };
 
   const loadMore = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
   }, []);
-
 
   const handleViewDetails = (carId: string) => {
     if (isAuthenticated) {
@@ -187,6 +266,7 @@ export default function MarketplacePage() {
       router.push("/signin");
     }
   };
+
   return (
     <div
       className={`min-h-screen ${
@@ -215,13 +295,16 @@ export default function MarketplacePage() {
                       {category.name}
                     </AccordionTrigger>
                     <AccordionContent>
-                      <ScrollArea className="h-[200px] rounded-md">
+                      <ScrollArea className="h-[80px] rounded-md">
                         <div className="flex flex-wrap gap-2 p-2">
                           {category.makes.map((make) => (
                             <Badge
                               key={make}
                               variant={
-                                selectedMake === make ? "default" : "outline"
+                                selectedMake.toLowerCase() ===
+                                make.toLowerCase()
+                                  ? "default"
+                                  : "outline"
                               }
                               className="cursor-pointer"
                               onClick={() => handleMakeSelect(make)}
@@ -244,23 +327,79 @@ export default function MarketplacePage() {
                 Search
               </Label>
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-                <Input
-                  id="search"
-                  type="text"
-                  placeholder="Search cars..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-grow bg-gray-100 dark:bg-gray-700"
-                />
-                <Select onValueChange={(value) => setPriceRange(value)}>
+                <div className="relative w-full">
+                  <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <Input
+                        id="search"
+                        type="text"
+                        placeholder={
+                          isSearchDisabled
+                            ? "Select category first..."
+                            : "Search cars..."
+                        }
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-gray-100 dark:bg-gray-700"
+                        disabled={isSearchDisabled}
+                      />
+                    </PopoverTrigger>
+                    {searchSuggestions.length > 0 && (
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandList>
+                            <CommandGroup>
+                              {searchSuggestions.map((suggestion) => (
+                                <CommandItem
+                                  key={suggestion}
+                                  onSelect={() =>
+                                    handleSuggestionSelect(suggestion)
+                                  }
+                                >
+                                  {suggestion}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    )}
+                  </Popover>
+                </div>
+
+                <Select
+                  value={sortOption}
+                  onValueChange={(value) => setSortOption(value)}
+                >
                   <SelectTrigger
-                    className={`w-full md:w-[240px] ${
+                    className={`w-full md:w-[220px] ${
                       darkMode
                         ? "bg-gray-700 text-white"
                         : "bg-gray-100 text-gray-900"
                     }`}
                   >
-                    
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="price_high">
+                     High to Low
+                    </SelectItem>
+                    <SelectItem value="price_low">
+                     Low to High
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select onValueChange={(value) => setPriceRange(value)}>
+                  <SelectTrigger
+                    className={`w-full md:w-[290px] ${
+                      darkMode
+                        ? "bg-gray-700 text-white"
+                        : "bg-gray-100 text-gray-900"
+                    }`}
+                  >
                     <SelectValue placeholder="Price Range" />
                   </SelectTrigger>
                   <SelectContent>
@@ -279,7 +418,7 @@ export default function MarketplacePage() {
                 </Select>
                 <Button
                   onClick={handleSearch}
-                  disabled={loading}
+                  disabled={loading || isSearchDisabled}
                   className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {loading ? (
@@ -301,7 +440,7 @@ export default function MarketplacePage() {
                 {filteredCars.map((car) => (
                   <div
                     key={car.id}
-                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg"
+                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105"
                   >
                     <Image
                       src={
@@ -327,6 +466,12 @@ export default function MarketplacePage() {
                           {car.mileage.toLocaleString()} miles
                         </p>
                       </div>
+                      {car.listed_date && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                          Listed:{" "}
+                          {new Date(car.listed_date).toLocaleDateString()}
+                        </p>
+                      )}
                       <Button
                         className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => handleViewDetails(car.id)}
@@ -348,9 +493,24 @@ export default function MarketplacePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-600 dark:text-gray-400">
-                No cars found. Try adjusting your search criteria.
-              </p>
+              <div className="text-center py-12">
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+                  No cars found. Try adjusting your search criteria.
+                </p>
+                <Button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedMake("");
+                    setPriceRange("");
+                    setSortOption("newest");
+                    setPage(1);
+                    setIsSearchDisabled(false);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Reset Filters
+                </Button>
+              </div>
             )}
 
             {filteredCars.length > 0 && !loading && (

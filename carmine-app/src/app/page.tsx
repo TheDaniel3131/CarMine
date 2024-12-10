@@ -126,16 +126,16 @@ export default function CarMine() {
               title: "Buy Your Dream Cars",
               description:
           "Thinking of a dream car that you always wanted to buy? Browse our wide range of vehicles to find one that suits you. From SUVs to sedans, we've got you all!",
-              action: "Explore Market",
-              link: "/buy",
+              action: "Buy Now",
+              link: "/marketplace",
             },
             {
               icon: ShoppingBag,
               title: "Sell Your Own Cars",
               description:
           "CarMine allows you to sell your car with ease with our streamlined process in just minutes! Upload your photos, set your price and your car details. You are ready to go!",
-              action: "Browse Parts",
-              link: "/marketplace",
+              action: "Sell Now",
+              link: "/sell",
             },
             {
               icon: Key,
@@ -143,7 +143,7 @@ export default function CarMine() {
               description:
           "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and car selections.",
               action: "Rent Now",
-              link: "/rent",
+              link: "/sell",
             },
           ].map((item, index) => (
             <div
