@@ -35,7 +35,7 @@ interface Message {
   id: string;
   name: string;
   email: string;
-  subject: string;
+  // subject: string;
   message: string;
   submittedAt: string;
   replied: boolean;
@@ -134,8 +134,11 @@ export default function AdminMessagesPage() {
     (message) =>
       message.name.toLowerCase().includes(search.toLowerCase()) ||
       message.email.toLowerCase().includes(search.toLowerCase()) ||
-      message.subject.toLowerCase().includes(search.toLowerCase())
+      message.message.toLowerCase().includes(search.toLowerCase()) || 
+      new Date(message.submittedAt).toLocaleDateString().includes(search) ||
+      (message.replied ? "Replied" : "Pending").toLowerCase().includes(search.toLowerCase())
   );
+
 
   return (
     <div
@@ -337,12 +340,12 @@ export default function AdminMessagesPage() {
                   </div>
                 </div>
                 <div>
-                  <Label className={darkMode ? "text-gray-300" : ""}>
+                  {/* <Label className={darkMode ? "text-gray-300" : ""}>
                     Subject
                   </Label>
                   <div className={darkMode ? "text-gray-100" : ""}>
                     Re: {selectedMessage.subject}
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <Label

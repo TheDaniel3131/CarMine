@@ -108,7 +108,7 @@ export default function MarketplacePage() {
   const fetchCars = useCallback(async () => {
     try {
       setLoading(true);
-      let url = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=9`;
+      let url = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=100`;
 
       if (selectedMake) {
         url += `&make=${selectedMake}`;
