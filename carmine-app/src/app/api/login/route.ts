@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Forward the request to the ASP.NET Core Web API
+    // Forward the request to the ASP.NET Core Web API (localhost:5208)
     const response = await fetch("http://localhost:5208/api/auth/login", {
       method: "POST",
       headers: {

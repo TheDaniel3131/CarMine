@@ -22,6 +22,7 @@ export default function SellPage() {
     const [image, setImage] = useState<File | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [errorMessage, setErrorMessage] = useState('') 
+    const [isRentable, setIsRentable] = useState(false) 
 
     useEffect(() => {
         if (darkMode) {
@@ -122,6 +123,7 @@ export default function SellPage() {
             formData.append('car_mileage', trimmedMileage)
             formData.append('car_price', trimmedPrice)
             formData.append('car_description', trimmedDescription)
+            formData.append("is_rentable", JSON.stringify(isRentable))
             
             // Append image if selected
             if (image) {
@@ -151,6 +153,7 @@ export default function SellPage() {
             setPrice('')
             setDescription('')
             setImage(null)
+            setIsRentable(false)
     
             // Show success toast
             toast.success('Car listed successfully!')
@@ -273,6 +276,19 @@ export default function SellPage() {
                                 </div>
                             )}
                         </div>
+                        <div>
+                            <label htmlFor="isRentable" className="flex items-center">
+                                <input
+                                    id="isRentable"
+                                    type="checkbox"
+                                    checked={isRentable}
+                                    onChange={(e) => setIsRentable(e.target.checked)}
+                                    className="mr-2"
+                                />
+                                Allow for Rent
+                            </label>
+                        </div>
+
                         <Button 
                             type="submit" 
                             disabled={isSubmitting}

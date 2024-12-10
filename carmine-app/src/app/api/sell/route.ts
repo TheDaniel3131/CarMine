@@ -28,11 +28,12 @@ export async function POST(request: Request) {
     const mileage = formData.get('car_mileage')?.toString() || "";
     const description = formData.get('car_description')?.toString() || "";
     const image = formData.get('car_image') as File | null;
+    const isRentable = formData.get('is_rentable') === "true"; // Parse as boolean
 
     // Validation
     if (!make || !model || !year || !price) {
       return NextResponse.json(
-        { error: "Missing required fields" }, 
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     const currentYear = new Date().getFullYear();
     if (isNaN(parsedYear) || parsedYear < 1900 || parsedYear > currentYear + 1) {
       return NextResponse.json(
-        { error: "Invalid year" }, 
+        { error: "Invalid year" },
         { status: 400 }
       );
     }
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
     // Validate price
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       return NextResponse.json(
-        { error: "Invalid price" }, 
+        { error: "Invalid price" },
         { status: 400 }
       );
     }
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
       } catch (fileError) {
         console.error("Image upload error:", fileError);
         return NextResponse.json(
-          { error: "Failed to upload image" }, 
+          { error: "Failed to upload image" },
           { status: 500 }
         );
       }
@@ -95,11 +96,11 @@ export async function POST(request: Request) {
       // Prepare SQL query
       const query = `
         INSERT INTO car 
-        (car_make, car_model, car_year, car_price, car_description, car_image, car_quantity, car_mileage) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+        (car_make, car_model, car_year, car_price, car_description, car_image, car_quantity, car_mileage, is_rentable) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
         RETURNING car_id;
       `;
-      
+
       // Execute query
       const result = await client.query(query, [
         make,
@@ -109,21 +110,22 @@ export async function POST(request: Request) {
         description,
         imageUrl,
         1, // Default quantity
-        parsedMileage
+        parsedMileage,
+        isRentable // Include rental option in the database
       ]);
 
       // Success response
       return NextResponse.json(
-        { 
-          message: "Car added successfully", 
-          carId: result.rows[0]?.car_id 
-        }, 
+        {
+          message: "Car added successfully",
+          carId: result.rows[0]?.car_id
+        },
         { status: 201 }
       );
     } catch (dbError) {
       console.error("Database insertion error:", dbError);
       return NextResponse.json(
-        { error: "Failed to insert car details" }, 
+        { error: "Failed to insert car details" },
         { status: 500 }
       );
     } finally {
@@ -132,7 +134,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Unhandled error:", error);
     return NextResponse.json(
-      { error: "Internal server error" }, 
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
