@@ -279,7 +279,7 @@ export default function MarketplacePage() {
         unreadMessages={0}
       />
 
-      <main className="container mx-auto px-4 py-16 md:py-24">
+      <main className="container mx-auto px-6 py-10 md:py-12">
         <h1 className="text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600 dark:from-blue-400 dark:via-blue-300 dark:to-purple-400">
           Find Your Dream Car
         </h1>
