@@ -55,24 +55,29 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
         }
         
         const transformedCar: CarDetails = {
-          id: data.id?.toString() ?? "N/A",
-          make: data.make ?? "N/A",
-          model: data.model ?? "N/A",
-          year: parseInt(data.year) || 0,
-          trim: data.trim ?? "N/A",
-          price: parseFloat(data.price?.replace("$", "").replace(",", "")) || 0,
-          mileage: parseInt(data.mileage?.replace(" Miles", "").replace(",", "")) || 0,
+          id: data.id?.toString() ?? params.id,
+          make: data.make ?? 'Unknown Make',
+          model: data.model ?? 'Unknown Model',
+          year: data.year ? parseInt(data.year) : new Date().getFullYear(),
+          trim: data.trim ?? 'Base Trim',
+          price: data.price 
+            ? parseFloat(data.price.replace(/[^0-9.-]+/g, '')) 
+            : 0,
+          mileage: data.mileage 
+            ? parseInt(data.mileage.replace(/[^0-9.-]+/g, '')) 
+            : 0,
           image_url: data.primaryPhotoUrl ?? "/placeholder.svg?height=400&width=600",
-          location: data.location ?? "N/A",
-          exteriorColor: data.exteriorColor ?? "N/A",
-          interiorColor: data.interiorColor ?? "N/A",
-          fuelType: data.fuelType ?? "N/A",
-          transmission: data.transmission ?? "N/A",
-          engine: data.engine ?? "N/A",
-          vin: data.vin ?? "N/A",
-          description: data.description ?? "No description available.",
+          location: data.location ?? 'Unknown Location',
+          exteriorColor: data.exteriorColor ?? 'Not Specified',
+          interiorColor: data.interiorColor ?? 'Not Specified',
+          fuelType: data.fuelType ?? 'Not Specified',
+          transmission: data.transmission ?? 'Not Specified',
+          engine: data.engine ?? 'Not Specified',
+          vin: data.vin ?? 'Not Available',
+          description: data.description ?? 'No description available.',
         };
 
+        console.log("Transformed Car Data:", transformedCar);
         setCar(transformedCar);
       } catch (err) {
         console.error("Error fetching car details:", err);
