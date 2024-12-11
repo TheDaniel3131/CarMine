@@ -297,7 +297,7 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
                   <h1 className="mt-1 text-3xl font-bold">{car.trim}</h1>
                 </div>
                 <Badge variant="secondary" className="text-lg">
-                  {car.condition}
+                  {/* {car.condition} */}
                 </Badge>
               </div>
 
