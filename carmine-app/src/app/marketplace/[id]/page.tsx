@@ -253,11 +253,13 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Marketplace
           </Button>
-          <div className="flex gap-2">
+            <div className="flex gap-2">
             <Button
               onClick={handleShare}
               variant="outline"
-              className="flex items-center"
+              className={`flex items-center ${
+              darkMode ? "text-white bg-gray-700 border-gray-900" : "text-gray-900"
+              }`}
             >
               <Share2 className="w-4 h-4 mr-1" />
               Share
@@ -266,15 +268,15 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
               onClick={handleFavorite}
               variant="outline"
               className={`flex items-center ${
-                isFavorite ? "text-red-500" : ""
+              isFavorite ? "text-red-500" : darkMode ? "text-white bg-gray-700 border-gray-900" : "text-gray-900"
               }`}
             >
               <Heart
-                className={`w-4 h-4 mr-1 ${isFavorite ? "fill-current" : ""}`}
+              className={`w-4 h-4 mr-1 ${isFavorite ? "fill-current" : ""}`}
               />
               {isFavorite ? "Saved" : "Save"}
             </Button>
-          </div>
+            </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
