@@ -265,7 +265,7 @@ export default function SellPage() {
                 : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
             }`}
           >
-            Sell Your Car
+            Sell & Your Cars
           </h1>
 
           <div className="max-w-2xl mx-auto">
