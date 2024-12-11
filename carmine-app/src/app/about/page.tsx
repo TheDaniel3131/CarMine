@@ -34,7 +34,7 @@ export default function AboutUs() {
         toggleDarkMode={toggleDarkMode}
         unreadMessages={0} // Add this prop with a default value
       />
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-8 md:py-12">
         <h1
           className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
             darkMode
@@ -45,7 +45,7 @@ export default function AboutUs() {
           About CarMine
         </h1>
 
-        <div className="max-w-4xl mx-auto mb-16">
+        <div className="max-w-4xl mx-auto mb-12 py-1">
           <p
             className={`text-xl mb-8 ${
               darkMode ? "text-gray-300" : "text-gray-700"
@@ -58,7 +58,7 @@ export default function AboutUs() {
             possible.
           </p>
           <p
-            className={`text-xl mb-8 ${
+            className={`text-xl mb-16 ${
               darkMode ? "text-gray-300" : "text-gray-700"
             }`}
           >
@@ -71,7 +71,7 @@ export default function AboutUs() {
         </div>
 
         <section
-          className={`mb-16 ${
+          className={`mb-24 ${
             darkMode ? "bg-gray-800" : "bg-white"
           } rounded-3xl shadow-2xl p-12`}
         >
@@ -84,7 +84,7 @@ export default function AboutUs() {
           >
             Our Core Values
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 mb-10">
             {[
               {
                 icon: Users,
@@ -144,22 +144,19 @@ export default function AboutUs() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               {
-                name: "Jane Doe",
-                role: "CEO & Founder",
-                image:
-                  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/person-1-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
+                name: "Daniel Poh Ting Fong",
+                role: "Tech Lead, Founder of CarMine",
+                image: "/about/dptf.jpg",
               },
               {
-                name: "John Smith",
-                role: "CTO",
-                image:
-                  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/person-2-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
+                name: "Tan Han Jay",
+                role: "Software Engineer, Founder of Carmine",
+                image: "/about/thj.jpg",
               },
               {
-                name: "Emily Brown",
-                role: "Head of Customer Experience",
-                image:
-                  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/person-3-Ld5Hy7Ue0Ue9Ue9Ue9Ue9Ue9Ue9Ue9.jpg",
+                name: "Lee Jia Kin",
+                role: "Database Administrator & Expert, Founder of Carmine",
+                image: "/about/jklee.jpg",
               },
             ].map((member, index) => (
               <div
@@ -171,9 +168,9 @@ export default function AboutUs() {
                 <Image
                   src={member.image}
                   alt={member.name}
-                  width={400}
-                  height={400}
-                  className="w-full h-64 object-cover"
+                  width={800}
+                  height={800}
+                  className="w-full h-128 object-cover"
                 />
                 <div className="p-6">
                   <h3

@@ -68,9 +68,9 @@ export default function FAQ() {
           unreadMessages={0} // Add this prop with a default value
         />
 
-        <main className="container mx-auto px-4 py-20 md:py-24">
+        <main className="container mx-auto px-4 py-10 md:py-10">
           <h1
-            className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
+            className={`text-5xl md:text-7xl md:leading-tight font-bold text-center mb-12 text-transparent bg-clip-text ${
               darkMode
                 ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
                 : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
@@ -116,11 +116,17 @@ export default function FAQ() {
               If you couldn&apos;t find the answer to your question, feel free
               to contact us.
             </p>
-           <Link href="/contact">
-            <Button className={darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}>
-              Contact Support
-            </Button>           
-           </Link>
+            <Link href="/contact">
+              <Button
+                className={
+                  darkMode
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }
+              >
+                Contact Support
+              </Button>
+            </Link>
           </div>
         </main>
         <Footer darkMode={darkMode} />

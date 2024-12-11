@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -74,7 +74,9 @@ export default function CarCheckout() {
 
     // Basic format validation
     if (!/^\d{4}\s\d{4}\s\d{4}\s\d{4}$/.test(formData.cardNumber)) {
-      toast.error("Please enter a valid card number in the format 1234 5678 9012 3456");
+      toast.error(
+        "Please enter a valid card number in the format 1234 5678 9012 3456"
+      );
       return false;
     }
     if (!/^\d{2}\/\d{2}$/.test(formData.expirationDate)) {
@@ -128,14 +130,33 @@ export default function CarCheckout() {
     try {
       const isSuccess = await simulatePaymentProcess();
 
-      if (isSuccess) {
-        toast.success("🎉 Payment successful! Your car purchase is complete.");
-        setTimeout(() => {
-          router.push("/marketplace");
-        }, 2000);
-      } else {
+      if (!isSuccess) {
         throw new Error("Payment declined by bank");
       }
+
+      // Call the API to record the checkout
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cardNumber: formData.cardNumber,
+          expirationDate: formData.expirationDate,
+          cvv: formData.cvv,
+          carDetails,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to record checkout");
+      }
+
+      toast.success("🎉 Payment successful! Your car purchase is complete.");
+      setTimeout(() => {
+        router.push("/marketplace");
+      }, 2000);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -154,7 +175,7 @@ export default function CarCheckout() {
   };
 
   if (!carDetails) {
-    return(
+    return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
       </div>
