@@ -257,7 +257,7 @@ export default function SellPage() {
           toggleDarkMode={toggleDarkMode}
           unreadMessages={0}
         />
-        <main className="container mx-auto px-4 py-20 md:py-24">
+        <main className="container mx-auto px-4 py-10 md:py-12">
           <h1
             className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
               darkMode
@@ -265,7 +265,7 @@ export default function SellPage() {
                 : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
             }`}
           >
-            Sell Your Car
+            Sell & Rent Your Cars
           </h1>
 
           <div className="max-w-2xl mx-auto">

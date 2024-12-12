@@ -99,7 +99,7 @@ export default function ContactUs() {
         unreadMessages={0} // Add this prop with a default value
       />
 
-      <main className="container mx-auto px-4 py-20 md:py-24">
+      <main className="container mx-auto px-4 py-10 md:py-12">
         <h1
           className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
             darkMode

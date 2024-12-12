@@ -33,9 +33,9 @@ export default function PrivacyPolicy() {
           unreadMessages={0} // Add this prop with a default value
         />
 
-        <main className="container mx-auto px-4 py-20">
+        <main className="container mx-auto px-4 py-7 md:py-10">
           <h1
-            className={`text-5xl md:text-7xl font-bold text-center mb-12 text-transparent bg-clip-text ${
+            className={`text-5xl md:text-7xl md:leading-tight font-bold text-center mb-12 text-transparent bg-clip-text ${
               darkMode
                 ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
                 : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
