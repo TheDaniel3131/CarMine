@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, Menu, Sun, Moon, Inbox, LogOut } from "lucide-react";
+import { Car, Menu, Sun, Moon, Inbox, LogOut, User} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -122,6 +122,19 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
               )}
             </div>
             {isAuthenticated && (
+              <Link href="/profile">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`relative ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+            {isAuthenticated && (
               <Link href="/inbox">
                 <Button
                   variant="ghost"
@@ -202,6 +215,21 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
                       </Link>
                     </DropdownMenuItem>
                   ))}
+                {/* Profile Icon */}
+                {isAuthenticated && (
+                  <DropdownMenuItem>
+                    <Link
+                      href="/profile"
+                      className={`flex w-full font-semibold transition-colors duration-300 ${
+                        darkMode
+                          ? "text-white hover:text-blue-400"
+                          : "text-gray-900 hover:text-blue-600"
+                      }`}
+                    >
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 {isAuthenticated ? (
                   <>
                     <DropdownMenuItem>
