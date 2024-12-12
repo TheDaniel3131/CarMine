@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 
 export default function ContactUs() {
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,6 +18,16 @@ export default function ContactUs() {
   });
 
   useEffect(() => {
+
+    const userEmail = localStorage.getItem("userEmail");
+    if (userEmail) {
+      setIsLoggedIn(true);
+      setFormData(prev => ({
+        ...prev,
+        email: userEmail
+      }));
+    }
+
     if (darkMode) {
       document.documentElement.classList.add("dark");
     } else {
@@ -66,12 +77,13 @@ export default function ContactUs() {
 
       const result = await response.json();
       alert(result.message);
-      setFormData({ name: "", email: "", message: "" }); // Reset form on success
+      setFormData({ name: "", email: isLoggedIn ? formData.email : "", message: "" });
     } catch (error) {
       console.error(error);
       alert("An error occurred. Please try again.");
     }
-  };
+
+  };  
 
   return (
     <div
@@ -140,10 +152,15 @@ export default function ContactUs() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={!isLoggedIn ? handleChange : undefined}
+                  readOnly={isLoggedIn}
                   placeholder="your@email.com"
                   className={`w-full ${
-                    darkMode
+                    isLoggedIn
+                      ? darkMode 
+                        ? "bg-gray-700 text-gray-300 cursor-not-allowed" 
+                        : "bg-gray-200 text-gray-600 cursor-not-allowed"
+                      : darkMode
                       ? "bg-gray-700 text-white"
                       : "bg-white text-gray-900"
                   }`}
