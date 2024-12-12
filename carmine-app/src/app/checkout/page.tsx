@@ -39,24 +39,53 @@ export default function CarCheckout() {
     expirationDate: "",
     cvv: "",
   });
+  // const [emailPrefix, setEmailPrefix] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const encodedData = searchParams.get("data");
-    if (encodedData) {
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(encodedData));
-        setCarDetails(decodedData);
-        toast.info("Welcome to checkout! Please enter your payment details.");
-      } catch (error) {
-        toast.error("Invalid car details. Redirecting to marketplace...");
-        console.error("Error parsing car details:", error);
-        setTimeout(() => router.push("/marketplace"), 2000);
-      }
-    } else {
-      toast.error("No car details found. Redirecting to marketplace...");
+useEffect(() => {
+  const encodedData = searchParams.get("data");
+  if (encodedData) {
+    try {
+      const decodedData = JSON.parse(decodeURIComponent(encodedData));
+      setCarDetails(decodedData);
+      toast.info("Welcome to checkout! Please enter your payment details.");
+    } catch (error) {
+      toast.error("Invalid car details. Redirecting to marketplace...");
+      console.error("Error parsing car details:", error);
       setTimeout(() => router.push("/marketplace"), 2000);
     }
-  }, [searchParams, router]);
+  } else {
+    toast.error("No car details found. Redirecting to marketplace...");
+    setTimeout(() => router.push("/marketplace"), 2000);
+  }
+
+  // Extract user email from localStorage and set it
+  const storedEmail = localStorage.getItem("userEmail");
+  if (storedEmail) {
+    setUserEmail(storedEmail);
+    // const emailPrefix = storedEmail.split("@")[0];
+    // setEmailPrefix(emailPrefix);
+
+    // Fetch the userId based on the full userEmail
+    fetch(`/api/validate-uid?userEmail=${storedEmail}`) // Change this to use the full userEmail
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success && data.userId) {
+          setUserId(data.userId);
+        } else {
+          toast.error("User not found with the given email.");
+        }
+      })
+      .catch((error) => {
+        toast.error("Error fetching user information.");
+        console.error("Error fetching userId:", error);
+      });
+  } else {
+    toast.error("User email not found in localStorage.");
+  }
+}, [searchParams, router]);
+
 
   const validateForm = () => {
     if (!formData.cardNumber.trim()) {
@@ -124,6 +153,11 @@ export default function CarCheckout() {
       return;
     }
 
+    if (!userId) {
+      toast.error("User not found. Please log in again.");
+      return;
+    }
+
     setIsLoading(true);
     toast.info("Processing your payment...");
 
@@ -134,13 +168,14 @@ export default function CarCheckout() {
         throw new Error("Payment declined by bank");
       }
 
-      // Call the API to record the checkout
+      // Call the API to record the checkout using the userId
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId, // Send the userId here
           cardNumber: formData.cardNumber,
           expirationDate: formData.expirationDate,
           cvv: formData.cvv,
@@ -274,6 +309,12 @@ export default function CarCheckout() {
                   ${carDetails.price.toLocaleString()}
                 </span>
               </div>
+              {/* <p className="text-sm text-gray-500">
+                User Email Prefix: {emailPrefix}
+              </p> */}
+              <p className="text-sm text-gray-500">
+                User Email: {userEmail}
+              </p>
             </div>
           </div>
         </CardContent>

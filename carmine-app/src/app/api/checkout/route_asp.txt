@@ -1,16 +1,11 @@
+// app/api/checkout/route.ts
 import { NextResponse } from "next/server";
-import { Pool } from "pg";
 
-const pool = new Pool({
-  host: process.env.PGHOST,
-  port: parseInt(process.env.PGPORT || "5433"),
-  user: process.env.PGUSER,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-});
+const API_URL = "http://localhost:5208";
 
+// Define the request body interface
 interface CheckoutRequestBody {
-  userId: string; // Receive userId here
+  userId: string;
   cardNumber: string;
   expirationDate: string;
   cvv: string;
@@ -26,11 +21,12 @@ interface CheckoutRequestBody {
   };
 }
 
+// Validation function
 function validateCheckoutRequest(body: unknown): body is CheckoutRequestBody {
   return (
     body !== null &&
     typeof body === "object" &&
-    "userId" in body && // Ensure userId is part of the body
+    "userId" in body &&
     "cardNumber" in body &&
     "expirationDate" in body &&
     "cvv" in body &&
@@ -45,9 +41,11 @@ function validateCheckoutRequest(body: unknown): body is CheckoutRequestBody {
     "price" in body.carDetails &&
     "mileage" in body.carDetails &&
     "exteriorColor" in body.carDetails &&
+    typeof body.userId === "string" &&
     typeof body.cardNumber === "string" &&
     typeof body.expirationDate === "string" &&
     typeof body.cvv === "string" &&
+    typeof body.carDetails === "object" &&
     typeof body.carDetails.id === "string" &&
     typeof body.carDetails.make === "string" &&
     typeof body.carDetails.model === "string" &&
@@ -59,10 +57,12 @@ function validateCheckoutRequest(body: unknown): body is CheckoutRequestBody {
   );
 }
 
+// Single POST handler that includes validation
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // Validate the request body
     if (!validateCheckoutRequest(body)) {
       return NextResponse.json(
         { success: false, message: "Invalid request body" },
@@ -70,13 +70,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const { userId, cardNumber, expirationDate, cvv, carDetails } = body;
-
-    // Validate card details
+    // Basic card validation
     if (
-      cardNumber.replace(/\s/g, "").length !== 16 ||
-      cvv.length < 3 ||
-      !expirationDate.match(/^\d{2}\/\d{2}$/)
+      body.cardNumber.replace(/\s/g, "").length !== 16 ||
+      body.cvv.length < 3 ||
+      !body.expirationDate.match(/^\d{2}\/\d{2}$/)
     ) {
       return NextResponse.json(
         { success: false, message: "Invalid card details" },
@@ -84,69 +82,37 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get the next ID for CarPurchases
-    const nextIdResult = await pool.query(
-      'SELECT COALESCE(MAX("Id"), 0) + 1 as next_id FROM "CarPurchases"'
-    );
-    const nextId = nextIdResult.rows[0].next_id;
-
-    // Generate a transaction ID
-    const transactionId = `TRX-${Date.now()}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-
-    // Insert the purchase record
-    await pool.query(
-      `INSERT INTO "CarPurchases" (
-        "Id", 
-        "CarId",
-        "Make",
-        "Model",
-        "Year",
-        "Trim",
-        "Price",
-        "Mileage",
-        "ExteriorColor",
-        "PurchaseDate",
-        "TransactionId",
-        "PaymentStatus",
-        "CreatedAt",
-        "PurchaseType",
-        "Status",
-        "UserId"
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
-      [
-        nextId,
-        carDetails.id,
-        carDetails.make,
-        carDetails.model,
-        carDetails.year,
-        carDetails.trim,
-        carDetails.price,
-        carDetails.mileage,
-        carDetails.exteriorColor,
-        new Date(),
-        transactionId,
-        "Completed",
-        new Date(),
-        "Purchase",
-        "Active",
-        userId, // Store the userId here
-      ]
-    );
-
-    return NextResponse.json({
-      success: true,
-      message: "Purchase completed successfully",
-      data: {
-        purchaseId: nextId,
-        transactionId,
-        userId,
-        carDetails,
+    // Forward the request to ASP.NET Core API
+    const response = await fetch(`${API_URL}/api/checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      cache: "no-store", // Disable caching for this request
+      body: JSON.stringify(body),
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to process checkout");
+    }
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Checkout error:", error);
+
+    // Check if it's a network error (e.g., ASP.NET Core API not running)
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Unable to connect to the payment service. Please try again later.",
+        },
+        { status: 503 }
+      );
+    }
 
     return NextResponse.json(
       {
