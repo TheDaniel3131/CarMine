@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { PlusCircle, Search, Edit, Trash } from "lucide-react";
+import { PlusCircle, Search, Trash } from "lucide-react";
 import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -195,14 +195,6 @@ export default function AdminCarsPage() {
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push(`/admin/cars/${car.car_id}`)}
-                          >
-                            <Edit className={darkMode ? "text-gray-300" : ""} />
-                            <span className="sr-only">Edit car</span>
-                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
