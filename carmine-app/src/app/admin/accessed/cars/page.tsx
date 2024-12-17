@@ -119,7 +119,9 @@ export default function AdminCarsPage() {
           <CardHeader className="py-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl font-bold">Car Management</CardTitle>
+                <CardTitle className="text-xl font-bold">
+                  Car Management
+                </CardTitle>
                 <CardDescription
                   className={darkMode ? "text-gray-300" : "text-gray-600"}
                 >
@@ -127,8 +129,12 @@ export default function AdminCarsPage() {
                 </CardDescription>
               </div>
               <Button
-                onClick={() => router.push("/admin/accessed/cars/new?authenticated=true")}
-                className={darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+                onClick={() =>
+                  router.push("/admin/accessed/cars/new?authenticated=true")
+                }
+                className={
+                  darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""
+                }
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New Car
@@ -143,21 +149,42 @@ export default function AdminCarsPage() {
                   placeholder="Search cars..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className={`pl-8 ${darkMode ? "bg-gray-700 text-gray-100" : "bg-white"}`}
+                  className={`pl-8 ${
+                    darkMode ? "bg-gray-700 text-gray-100" : "bg-white"
+                  }`}
                 />
               </div>
             </div>
-            <div className={`rounded-md border ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
+            <div
+              className={`rounded-md border ${
+                darkMode ? "border-gray-700" : "border-gray-200"
+              }`}
+            >
               <Table>
                 <TableHeader>
                   <TableRow
-                    className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}
+                    className={
+                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }
                   >
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>Make</TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>Model</TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>Year</TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>Price</TableHead>
-                    <TableHead className={darkMode ? "text-gray-300" : ""}>Status</TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Make
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Model
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Year
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Price
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+                      Status
+                    </TableHead>
+                    <TableHead className={darkMode ? "text-gray-300" : ""}>
+            
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -177,18 +204,28 @@ export default function AdminCarsPage() {
                     filteredCars.map((car) => (
                       <TableRow
                         key={car.car_id}
-                        className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}
+                        className={
+                          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                        }
                       >
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_make}</TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_model}</TableCell>
-                        <TableCell className={darkMode ? "text-gray-300" : ""}>{car.car_year}</TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {car.car_make}
+                        </TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {car.car_model}
+                        </TableCell>
+                        <TableCell className={darkMode ? "text-gray-300" : ""}>
+                          {car.car_year}
+                        </TableCell>
                         <TableCell className={darkMode ? "text-gray-300" : ""}>
                           ${car.car_price.toLocaleString()}
                         </TableCell>
                         <TableCell className={darkMode ? "text-gray-300" : ""}>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              car.is_rentable ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+                              car.is_rentable
+                                ? "bg-green-200 text-green-800"
+                                : "bg-red-200 text-red-800"
                             }`}
                           >
                             {car.is_rentable ? "Rentable" : "Non-Rentable"}
@@ -200,7 +237,9 @@ export default function AdminCarsPage() {
                             size="icon"
                             onClick={() => deleteCar(car.car_id)}
                           >
-                            <Trash className={darkMode ? "text-gray-300" : ""} />
+                            <Trash
+                              className={darkMode ? "text-gray-300" : ""}
+                            />
                             <span className="sr-only">Delete car</span>
                           </Button>
                         </TableCell>
