@@ -30,9 +30,8 @@ interface CheckoutFormData {
 }
 
 export const dynamic = 'force-dynamic';
-export const revalidate = false;
 
-export default function CarCheckout() {
+function CarCheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [carDetails, setCarDetails] = useState<CarCheckoutDetails | null>(null);
@@ -221,7 +220,6 @@ useEffect(() => {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-3xl dark:bg-gray-800">
         <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -290,22 +288,25 @@ useEffect(() => {
             </div>
             <div className="space-y-6 mb-10 lg:border-l lg:pl-6">
               <div className="aspect-[16/9] relative overflow-hidden rounded-lg">
-                <Image
-                  src={carDetails.image_url}
-                  alt={`${carDetails.year} ${carDetails.make} ${carDetails.model}`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="bg-gray-100"
-                />
+                {carDetails && (
+                  <Image
+                    src={carDetails.image_url}
+                    alt={`${carDetails.year} ${carDetails.make} ${carDetails.model}`}
+                    layout="fill"
+                    objectFit="cover"
+                    className="bg-gray-100"
+                  />
+                )}
               </div>
               <div>
                 <h3 className="text-lg font-semibold">
-                  {carDetails.year} {carDetails.make} {carDetails.model}
+                {carDetails && (
+                  <p className="text-sm text-gray-500">
+                    {carDetails.trim} | {carDetails.exteriorColor} |{" "}
+                    {carDetails.mileage.toLocaleString()} miles
+                  </p>
+                )}
                 </h3>
-                <p className="text-sm text-gray-500">
-                  {carDetails.trim} | {carDetails.exteriorColor} |{" "}
-                  {carDetails.mileage.toLocaleString()} miles
-                </p>
               </div>
               <div className="flex justify-between items-center pt-2">
                 <span className="text-lg font-semibold">Total Price</span>
@@ -325,6 +326,13 @@ useEffect(() => {
       </Card>
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
+  );
+}
+
+export default function CarCheckout() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CarCheckoutContent />
     </Suspense>
   );
 }
