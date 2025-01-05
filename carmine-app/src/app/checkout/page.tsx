@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
@@ -218,6 +218,7 @@ useEffect(() => {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-3xl dark:bg-gray-800">
         <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -321,5 +322,6 @@ useEffect(() => {
       </Card>
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
+    </Suspense>
   );
 }
