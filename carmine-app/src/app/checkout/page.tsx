@@ -29,6 +29,9 @@ interface CheckoutFormData {
   cvv: string;
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function CarCheckout() {
   const router = useRouter();
   const searchParams = useSearchParams();
