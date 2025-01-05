@@ -9,6 +9,9 @@ import {
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+export const revalidate = false;
+
 export default function PaymentSuccessPage() {
   return (
     <div className="container mx-auto flex items-center justify-center min-h-screen">
