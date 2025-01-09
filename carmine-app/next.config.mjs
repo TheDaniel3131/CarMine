@@ -33,6 +33,28 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "content.homenetiol.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "pictures.dealer.com",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.cai-media-management.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "assets.cai-media-management.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.max.auto",
       },
     ],
