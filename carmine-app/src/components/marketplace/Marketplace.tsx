@@ -132,7 +132,11 @@ export default function MarketplacePage() {
           break;
       }
 
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch cars");
