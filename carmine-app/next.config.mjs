@@ -16,8 +16,15 @@ const nextConfig = {
         hostname: "www.motorcarmarkdown.com",
       },
       {
+        protocol: "http",
+        hostname: "vehicle-photos-published.vauto.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
         protocol: "https",
         hostname: "vehicle-photos-published.vauto.com",
+        port: "",
         pathname: "/**",
       },
       {
