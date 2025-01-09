@@ -18,6 +18,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "vehicle-photos-published.vauto.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
