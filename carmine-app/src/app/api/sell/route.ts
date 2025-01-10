@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import { writeFile, mkdir } from 'fs/promises';
 
 // Create a connection pool
 const pool = new Pool({
@@ -17,18 +14,18 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    // Parse form data
-    const formData = await request.formData();
+    // Parse JSON data instead of form data
+    const data = await request.json();
 
-    // Extract form fields
-    const make = formData.get('car_make')?.toString() || "";
-    const model = formData.get('car_model')?.toString() || "";
-    const year = formData.get('car_year')?.toString() || "";
-    const price = formData.get('car_price')?.toString() || "";
-    const mileage = formData.get('car_mileage')?.toString() || "";
-    const description = formData.get('car_description')?.toString() || "";
-    const image = formData.get('car_image') as File | null;
-    const isRentable = formData.get('is_rentable') === "true"; // Parse as boolean
+    // Extract fields from JSON
+    const make = data.car_make;
+    const model = data.car_model;
+    const year = data.car_year;
+    const price = data.car_price;
+    const mileage = data.car_mileage;
+    const description = data.car_description;
+    const imageUrl = data.car_image_url; // This will be the S3 URL
+    const isRentable = data.is_rentable;
 
     // Validation
     if (!make || !model || !year || !price) {
@@ -60,35 +57,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Handle image upload
-    let imageUrl: string | null = null;
-    if (image && image.size > 0) {
-      try {
-        // Generate unique filename
-        const uniqueFileName = `${uuidv4()}-${image.name.replace(/\s/g, '_')}`;
-
-        // Convert image to buffer
-        const buffer = Buffer.from(await image.arrayBuffer());
-
-        // Define upload directory
-        const uploadDir = path.join(process.cwd(), 'public/uploads');
-        await mkdir(uploadDir, { recursive: true });
-
-        // Save file
-        const fullPath = path.join(uploadDir, uniqueFileName);
-        await writeFile(fullPath, buffer);
-
-        // Construct public URL
-        imageUrl = `/uploads/${uniqueFileName}`;
-      } catch (fileError) {
-        console.error("Image upload error:", fileError);
-        return NextResponse.json(
-          { error: "Failed to upload image" },
-          { status: 500 }
-        );
-      }
-    }
-
     // Connect to database
     const client = await pool.connect();
 
@@ -108,10 +76,10 @@ export async function POST(request: Request) {
         parsedYear,
         parsedPrice,
         description,
-        imageUrl,
+        imageUrl, // Store the S3 URL directly
         1, // Default quantity
         parsedMileage,
-        isRentable // Include rental option in the database
+        isRentable
       ]);
 
       // Success response

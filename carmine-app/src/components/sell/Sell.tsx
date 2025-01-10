@@ -10,6 +10,7 @@ import Footer from '@/components/Footer'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
+
 export default function SellPage() {
     const router = useRouter()
     const [darkMode, setDarkMode] = useState(false)
@@ -26,6 +27,7 @@ export default function SellPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [isFetching, setIsFetching] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     useEffect(() => {
         if (darkMode) {
@@ -189,6 +191,9 @@ export default function SellPage() {
     
         try {
             setIsSubmitting(true)
+            setUploadProgress(0)
+
+            let imageUrl = '';
     
             const formData = new FormData()
             formData.append('car_make', trimmedMake)
@@ -201,13 +206,51 @@ export default function SellPage() {
             
             // Append image if selected
             if (image) {
-                formData.append('car_image', image)
+            // Create unique filename
+            const fileName = `${Date.now()}-${image.name.replace(/\s/g, '_')}`;
+            const uploadUrl = `https://carmine-listings.s3.amazonaws.com/${fileName}`;
+
+            try {
+                // Upload to S3
+                const uploadResult = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: image,
+                    headers: {
+                        'Content-Type': image.type,
+                    }
+                });
+
+                if (!uploadResult.ok) {
+                    throw new Error('Failed to upload image to S3');
+                }
+
+                imageUrl = uploadUrl;
+            } catch (uploadError) {
+                console.error('Upload error:', uploadError);
+                throw new Error('Failed to upload image. Please try again.');
             }
-    
+        }
+            
+            // Create form data with S3 image key instead of file
+            const carData = {
+              car_make: make.trim(),
+              car_model: model.trim(),
+              car_year: year.trim(),
+              car_mileage: mileage.trim(),
+              car_price: price.trim(),
+              car_description: description.trim(),
+              is_rentable: isRentable,
+              car_image_url: imageUrl, // Send S3 key instead of file
+            };            
+
+            // Submit car data to your backend
             const response = await fetch('/api/sell', {
-                method: 'POST',
-                body: formData
-            })
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(carData),
+            });
     
             // Log the full response for debugging
             console.log('Response status:', response.status)
@@ -228,6 +271,7 @@ export default function SellPage() {
             setDescription('')
             setImage(null)
             setIsRentable(false)
+            setUploadProgress(0);
     
             // Show success toast
             toast.success('Car listed successfully!')
@@ -236,6 +280,7 @@ export default function SellPage() {
             router.push('/marketplace')
     
         } catch (error) {
+            setUploadProgress(0);
             setErrorMessage(
                 error instanceof Error ? error.message : 'Failed to list your car. Please try again.'
             )
@@ -433,10 +478,18 @@ export default function SellPage() {
                   </div>
 
                   {image && (
-                    <div className="mt-2 text-sm text-gray-500">
-                      {image.name} selected
-                    </div>
-                  )}
+                      <div className="mt-2">
+                          <p className="text-sm text-gray-500">{image.name} selected</p>
+                          {uploadProgress > 0 && uploadProgress < 100 && (
+                              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                  <div
+                                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                                      style={{ width: `${uploadProgress}%` }}
+                                  ></div>
+                              </div>
+                          )}
+                      </div>
+                    )}
 
                   <div className="mt-4">
                     <label
