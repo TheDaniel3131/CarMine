@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic"; // Ensure the route is dynamic
 
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
+
 export async function POST(req: Request) {
   const { username, email, password } = await req.json();
 
@@ -16,7 +19,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const response = await fetch("http://localhost:5208/api/auth/adminregister", {
+    const response = await fetch(`${API_BASE_URL}api/auth/adminregister`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

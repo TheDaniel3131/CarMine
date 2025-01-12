@@ -4,7 +4,7 @@ import { Pool } from "pg";
 // Create a connection pool
 const pool = new Pool({
   host: process.env.PGHOST,
-  port: parseInt(process.env.PGPORT || "5432"),
+  port: parseInt(process.env.PGPORT || "5433"),
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,

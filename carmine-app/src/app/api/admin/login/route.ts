@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { validateAdmin } from "@/lib/auth"; // Local database validation helper
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
+
 export const dynamic = "force-dynamic"; // Ensure dynamic routing
 
 export async function POST(req: Request) {
@@ -26,7 +28,7 @@ export async function POST(req: Request) {
     }
 
     // Step 2: Forward the request to the ASP.NET Core Web API
-    const response = await fetch("http://localhost:5208/api/auth/adminlogin", {
+    const response = await fetch(`${API_BASE_URL}/api/auth/adminlogin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

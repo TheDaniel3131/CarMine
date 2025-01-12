@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic"; // Ensure the route is dynamic and not p
 export async function GET() {
   const client = new Client({
     host: process.env.PGHOST,
-    port: parseInt(process.env.PGPORT || "5432"),
+    port: parseInt(process.env.PGPORT || "5433"),
     user: process.env.PGUSER,
     database: process.env.PGDATABASE,
     password: process.env.PGPASSWORD,

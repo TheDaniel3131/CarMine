@@ -1,21 +1,3 @@
-// import { NextResponse } from "next/server";
-
-// export async function GET(request: Request) {
-//   const { searchParams } = new URL(request.url);
-//   const email = searchParams.get("email");
-
-//   if (!email) {
-//     return NextResponse.json({ error: "Email is required" }, { status: 400 });
-//   }
-
-//   // Replace this with your database logic to retrieve the userId
-//   const userId = await fetch(`http://localhost:5208/api/users?email=${email}`)
-//     .then((response) => response.json())
-//     .then((data) => data.userId);
-
-//   return NextResponse.json(userId);
-// }
-
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 

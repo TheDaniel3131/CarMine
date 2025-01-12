@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
+
 export async function GET(
   request: Request,
   { params }: { params: { userId: string } }
@@ -8,7 +11,7 @@ export async function GET(
   const { userId } = params;
 
   const response = await fetch(
-    `http://localhost:5208/api/carrecords/${userId}`
+    `${API_BASE_URL}/api/carrecords/${userId}`
   );
   const data = await response.json();
 

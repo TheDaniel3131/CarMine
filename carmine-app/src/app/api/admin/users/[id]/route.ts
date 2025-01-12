@@ -1,12 +1,14 @@
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
+
 export async function DELETE(
-  request: Request,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
 
   try {
     // Replace with your actual API URL
-    const apiUrl = `http://localhost:5208/api/users/${id}`;
+    const apiUrl = `${API_BASE_URL}/api/users/${id}`;
 
     const response = await fetch(apiUrl, {
       method: "DELETE",

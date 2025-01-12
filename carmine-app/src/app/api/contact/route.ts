@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    const response = await fetch("http://localhost:5208/api/contact", {
+    const response = await fetch(`${API_BASE_URL}/api/contact`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
