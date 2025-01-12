@@ -6,7 +6,6 @@ import fs from "fs";
 export const dynamic = "force-dynamic"; // Ensure the route is dynamic and not prerendered
 
 export async function GET(request: Request) {
-  // Create a connection pool
   const pool = new Pool({
     host: process.env.PGHOST,
     port: parseInt(process.env.PGPORT || "5432"), // Default PostgreSQL port
@@ -18,7 +17,7 @@ export async function GET(request: Request) {
     connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
     ssl: {
       rejectUnauthorized: false, // For self-signed certificates; set to true for production
-      ca: fs.readFileSync("@/lib/us-east-1bundle.pem").toString(), // Path to the root certificate
+      ca: fs.readFileSync("@/lib/us-east-1-bundle.pem").toString(), // Path to the root certificate
     },
   });
 

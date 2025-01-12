@@ -14,7 +14,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    ca: fs.readFileSync("@/lib/us-east-1bundle.pem").toString(), // Path to the root certificate
+    ca: fs.readFileSync("@/lib/us-east-1-bundle.pem").toString(), // Path to the root certificate
   },
 });
 
