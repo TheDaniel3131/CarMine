@@ -14,7 +14,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    ca: fs.readFileSync("@/lib/us-east-1-bundle.pem").toString(), // Path to the root certificate
+    ca: fs.readFileSync("src/lib/us-east-1-bundle.pem").toString(), // Path to the root certificate
   },
 });
 
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     // Generate a transaction ID
     const transactionId = `TRX-${Date.now()}-${Math.random()
       .toString(36)
-      .substr(2, 9)}`;
+      .substring(2, 11)}`;
 
     // Insert the purchase record
     await pool.query(
