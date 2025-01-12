@@ -4,8 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { DollarSign, Camera, FileText, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-
-import { DragEvent } from 'react'
+import { DragEvent } from "react";
 import AH from "@/components/adminheader/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,24 +18,30 @@ import {
 } from "@/components/ui/card";
 import { useTheme } from "@/components/ThemeContext";
 
-export default function AdminRentCarPage({ params }: { params: { id: string } }) {
+export default function AdminRentCarPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const router = useRouter();
   const { darkMode } = useTheme();
-  
+
   // State variables
-  const [make, setMake] = React.useState('');
-  const [model, setModel] = React.useState('');
-  const [year, setYear] = React.useState('');
-  const [mileage, setMileage] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [description, setDescription] = React.useState('');
+  const [make, setMake] = React.useState("");
+  const [model, setModel] = React.useState("");
+  const [year, setYear] = React.useState("");
+  const [mileage, setMileage] = React.useState("");
+  const [price, setPrice] = React.useState("");
+  const [description, setDescription] = React.useState("");
   const [image, setImage] = React.useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState("");
   const [isRentable, setIsRentable] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
   const [imageUrl, setImageUrl] = React.useState<string>("");
   const [isFetching, setIsFetching] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+  const [currentImageUrl, setCurrentImageUrl] = React.useState("");
 
   // Load existing car data for edit mode
   React.useEffect(() => {
@@ -48,8 +53,8 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
   const fetchCarDetails = async (id: string) => {
     try {
       const response = await fetch(`/admin/accessed/cars/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch car details');
-      
+      if (!response.ok) throw new Error("Failed to fetch car details");
+
       const carData = await response.json();
       setMake(carData.make);
       setModel(carData.model);
@@ -58,9 +63,10 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
       setPrice(carData.price.toString());
       setDescription(carData.description);
       setIsRentable(carData.is_rentable);
+      setCurrentImageUrl(carData.image_url); // Store the current image URL
     } catch (error) {
-      console.error('Error fetching car details:', error);
-      toast.error('Failed to load car details');
+      console.error("Error fetching car details:", error);
+      toast.error("Failed to load car details");
     }
   };
 
@@ -70,7 +76,7 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
     }
   };
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
 
@@ -83,7 +89,6 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
       await handleUrlDrop(text);
     }
   };
-  
 
   const handleUrlDrop = async (url: string) => {
     try {
@@ -104,22 +109,20 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault(); // Prevent the default behavior to allow drop
-    console.log("Drag over event triggered");
+    event.preventDefault();
   };
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  e.stopPropagation();
-  setIsDragging(true);    
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  e.stopPropagation();
-  setIsDragging(false);
-  };    
-
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
 
   const handleUrlSubmit = async () => {
     if (!imageUrl) return;
@@ -128,7 +131,7 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
       setIsFetching(true);
       const response = await fetch(imageUrl);
       if (!response.ok) throw new Error("Failed to fetch the image");
-      
+
       const blob = await response.blob();
       const file = new File([blob], "uploaded_image.jpg", {
         type: blob.type,
@@ -145,9 +148,9 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Reset error message
-    setErrorMessage('');
+    setErrorMessage("");
 
     // Comprehensive validation
     const validationErrors: string[] = [];
@@ -162,95 +165,136 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
 
     // Validation checks
     if (!trimmedMake) {
-      validationErrors.push('Car make is required');
+      validationErrors.push("Car make is required");
     }
 
     if (!trimmedModel) {
-      validationErrors.push('Car model is required');
+      validationErrors.push("Car model is required");
     }
 
     if (!trimmedYear) {
-      validationErrors.push('Car year is required');
+      validationErrors.push("Car year is required");
     } else {
       const yearNum = parseInt(trimmedYear);
       const currentYear = new Date().getFullYear();
       if (isNaN(yearNum) || yearNum < 1900 || yearNum > currentYear + 1) {
-        validationErrors.push(`Please enter a valid year between 1900 and ${currentYear + 1}`);
+        validationErrors.push(
+          `Please enter a valid year between 1900 and ${currentYear + 1}`
+        );
       }
     }
 
     if (!trimmedMileage) {
-      validationErrors.push('Mileage is required');
+      validationErrors.push("Mileage is required");
     } else {
       const mileageNum = parseInt(trimmedMileage);
       if (isNaN(mileageNum) || mileageNum < 0) {
-        validationErrors.push('Mileage must be a non-negative number');
+        validationErrors.push("Mileage must be a non-negative number");
       }
     }
 
     if (!trimmedPrice) {
-      validationErrors.push('Price is required');
+      validationErrors.push("Price is required");
     } else {
       const priceNum = parseFloat(trimmedPrice);
       if (isNaN(priceNum) || priceNum <= 0) {
-        validationErrors.push('Price must be a positive number');
+        validationErrors.push("Price must be a positive number");
       }
     }
 
     if (!trimmedDescription) {
-      validationErrors.push('Car description is required');
+      validationErrors.push("Car description is required");
     } else if (trimmedDescription.length < 1) {
-      validationErrors.push('Description must not be empty');
+      validationErrors.push("Description must not be empty");
     }
 
-    // Check if an image is uploaded
-    if (!image) {
-      validationErrors.push('At least one car photo is required');
+    // Check if an image is required (only for new cars)
+    if (params.id === "new" && !image) {
+      validationErrors.push("At least one car photo is required");
     }
 
     // If there are validation errors, display them and stop submission
     if (validationErrors.length > 0) {
-      setErrorMessage(validationErrors.join('. '));
+      setErrorMessage(validationErrors.join(". "));
       return;
     }
 
     try {
       setIsSubmitting(true);
+      setUploadProgress(0);
 
-      const formData = new FormData();
-      formData.append('car_make', trimmedMake);
-      formData.append('car_model', trimmedModel);
-      formData.append('car_year', trimmedYear);
-      formData.append('car_mileage', trimmedMileage);
-      formData.append('car_price', trimmedPrice);
-      formData.append('car_description', trimmedDescription);
-      formData.append('is_rentable', JSON.stringify(isRentable));
-      
-      // Append image if selected
+      let imageUrl = currentImageUrl; // Use existing image URL by default
+
+      // Upload new image if selected
       if (image) {
-        formData.append('car_image', image);
+        const fileName = `${Date.now()}-${image.name.replace(/\s/g, "_")}`;
+        const uploadUrl = `https://carmine-listings.s3.amazonaws.com/${fileName}`;
+
+        try {
+          // Upload to S3
+          const uploadResult = await fetch(uploadUrl, {
+            method: "PUT",
+            body: image,
+            headers: {
+              "Content-Type": image.type,
+            },
+          });
+
+          if (!uploadResult.ok) {
+            throw new Error("Failed to upload image to S3");
+          }
+
+          imageUrl = uploadUrl;
+        } catch (uploadError) {
+          console.error("Upload error:", uploadError);
+          throw new Error("Failed to upload image. Please try again.");
+        }
       }
 
-      const response = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
+      // Prepare car data
+      const carData = {
+        car_make: trimmedMake,
+        car_model: trimmedModel,
+        car_year: trimmedYear,
+        car_mileage: trimmedMileage,
+        car_price: trimmedPrice,
+        car_description: trimmedDescription,
+        is_rentable: isRentable,
+        car_image_url: imageUrl,
+      };
+
+      // Make API request
+      const endpoint =
+        params.id === "new"
+          ? "/api/admin/upload"
+          : `/api/admin/cars/${params.id}`;
+
+      const response = await fetch(endpoint, {
+        method: params.id === "new" ? "POST" : "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(carData),
       });
 
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to save car');
+        throw new Error(result.error || "Failed to save car");
       }
 
-      toast.success(params.id === 'new' 
-        ? 'Car added successfully!' 
-        : 'Car updated successfully!');
+      toast.success(
+        params.id === "new"
+          ? "Car added successfully!"
+          : "Car updated successfully!"
+      );
 
-      // Redirect to cars list
-      router.push('/admin/accessed/cars?authenticated=true');
-
+      router.push("/admin/accessed/cars?authenticated=true");
     } catch (error) {
+      setUploadProgress(0);
       setErrorMessage(
-        error instanceof Error ? error.message : 'Failed to save car. Please try again.'
+        error instanceof Error
+          ? error.message
+          : "Failed to save car. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -277,7 +321,9 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-bold">
-                    {params.id === "new" ? "Add Rentable Car" : "Edit Rentable Car"}
+                    {params.id === "new"
+                      ? "Add Rentable Car"
+                      : "Edit Rentable Car"}
                   </CardTitle>
                   <CardDescription
                     className={darkMode ? "text-gray-300" : "text-gray-600"}
@@ -289,7 +335,9 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/admin/accessed/cars?authenticated=true")}
+                  onClick={() =>
+                    router.push("/admin/accessed/cars?authenticated=true")
+                  }
                   className={
                     darkMode
                       ? "bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900"
@@ -440,7 +488,6 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
                   <div
                     className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
                       isDragging
-
                         ? "border-blue-500"
                         : darkMode
                         ? "border-gray-600"
@@ -464,10 +511,19 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
                       className="hidden"
                     />
                   </div>
-
                   {image && (
-                    <div className="mt-2 text-sm text-gray-500">
-                      {image.name} selected
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        {image.name} selected
+                      </p>
+                      {uploadProgress > 0 && uploadProgress < 100 && (
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                          <div
+                            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -531,7 +587,11 @@ export default function AdminRentCarPage({ params }: { params: { id: string } })
                   } text-white`}
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  {isSubmitting ? "Saving Car..." : (params.id === 'new' ? "Add Car" : "Update Car")}
+                  {isSubmitting
+                    ? "Saving Car..."
+                    : params.id === "new"
+                    ? "Add Car"
+                    : "Update Car"}
                 </Button>
               </form>
             </CardContent>
