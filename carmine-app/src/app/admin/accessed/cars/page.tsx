@@ -89,16 +89,20 @@ export default function AdminCarsPage() {
           method: "DELETE",
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error("Failed to delete car");
+          throw new Error(data.error || "Failed to delete car");
         }
 
         // Only update the UI if the deletion was successful
         setCars(cars.filter((car) => car.car_id !== id));
+
+        // Optional: Show success message
+        alert("Car deleted successfully");
       } catch (error) {
         console.error("Error deleting car:", error);
-        // You might want to show an error message to the user
-        alert("Failed to delete car. Please try again.");
+        alert((error as Error).message || "Failed to delete car. Please try again.");
       }
     }
   };
