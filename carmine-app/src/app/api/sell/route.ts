@@ -4,12 +4,17 @@ import { Pool } from "pg";
 // Create a connection pool
 const pool = new Pool({
   host: process.env.PGHOST,
-  port: parseInt(process.env.PGPORT || "5433"),
+  port: parseInt(process.env.PGPORT || "5432"), // Default PostgreSQL port
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
+  max: 10, // Limit pool size for serverless
+  idleTimeoutMillis: 30000, // Close idle connections after 30s
+  connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
+  ssl: {
+    rejectUnauthorized: false, // For self-signed certificates; set to true for production
+  },
 });
-
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
