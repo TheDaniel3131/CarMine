@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
+import fs from "fs";
 
-// Reuse the connection pool across function invocations
+// Create a connection pool
 const pool = new Pool({
   host: process.env.PGHOST,
   port: parseInt(process.env.PGPORT || "5432"), // Default PostgreSQL port
@@ -13,6 +14,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
+    ca: fs.readFileSync("@/lib/us-east-1bundle.pem").toString(), // Path to the root certificate
   },
 });
 
