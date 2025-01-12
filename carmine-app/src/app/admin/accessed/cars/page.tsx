@@ -85,7 +85,7 @@ export default function AdminCarsPage() {
   const deleteCar = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this car?")) {
       try {
-        const response = await fetch(`/api/delete_cars`, {
+        const response = await fetch(`/api/admin/delete-cars`, {
           method: "DELETE",
         });
 
