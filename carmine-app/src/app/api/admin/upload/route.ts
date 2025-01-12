@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import { writeFile, mkdir } from 'fs/promises';
-// import fs from "fs";
 
 // Create a connection pool
 const pool = new Pool({
@@ -17,11 +13,6 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    // ca: fs
-    //   .readFileSync(
-    //     path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
-    //   )
-    //   .toString(),
   },
 });
 
@@ -29,16 +20,18 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    // Extract form fields
-    const make = formData.get('car_make')?.toString() || "";
-    const model = formData.get('car_model')?.toString() || "";
-    const year = formData.get('car_year')?.toString() || "";
-    const price = formData.get('car_price')?.toString() || "";
-    const mileage = formData.get('car_mileage')?.toString() || "";
-    const description = formData.get('car_description')?.toString() || "";
-    const image = formData.get('car_image') as File | null;
-    const isRentable = formData.get('is_rentable') === "true"; // Parse as boolean
+    // Parse JSON data instead of form data
+    const data = await request.json();
+
+    // Extract fields from JSON
+    const make = data.car_make;
+    const model = data.car_model;
+    const year = data.car_year;
+    const price = data.car_price;
+    const mileage = data.car_mileage;
+    const description = data.car_description;
+    const imageUrl = data.car_image_url; // This will be the S3 URL
+    const isRentable = data.is_rentable;
 
     // Validation
     if (!make || !model || !year || !price) {
@@ -55,42 +48,17 @@ export async function POST(request: Request) {
 
     // Validate year
     const currentYear = new Date().getFullYear();
-    if (isNaN(parsedYear) || parsedYear < 1900 || parsedYear > currentYear + 1) {
-      return NextResponse.json(
-        { error: "Invalid year" },
-        { status: 400 }
-      );
+    if (
+      isNaN(parsedYear) ||
+      parsedYear < 1900 ||
+      parsedYear > currentYear + 1
+    ) {
+      return NextResponse.json({ error: "Invalid year" }, { status: 400 });
     }
 
     // Validate price
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      return NextResponse.json(
-        { error: "Invalid price" },
-        { status: 400 }
-      );
-    }
-
-    // Handle image upload
-    let imageUrl: string | null = null;
-    if (image && image.size > 0) {
-      try {
-        const uniqueFileName = `${uuidv4()}-${image.name.replace(/\s/g, '_')}`;
-        const buffer = Buffer.from(await image.arrayBuffer());
-
-        const uploadDir = path.join(process.cwd(), 'public/uploads');
-        await mkdir(uploadDir, { recursive: true });
-
-        const fullPath = path.join(uploadDir, uniqueFileName);
-        await writeFile(fullPath, buffer);
-
-        imageUrl = `/uploads/${uniqueFileName}`;
-      } catch (fileError) {
-        console.error("Image upload error:", fileError);
-        return NextResponse.json(
-          { error: "Failed to upload image" },
-          { status: 500 }
-        );
-      }
+      return NextResponse.json({ error: "Invalid price" }, { status: 400 });
     }
 
     // Connect to the database and insert data
@@ -108,16 +76,16 @@ export async function POST(request: Request) {
         parsedYear,
         parsedPrice,
         description,
-        imageUrl,
-        1, 
+        imageUrl, // Store the S3 URL directly
+        1, // Default quantity
         parsedMileage,
-        isRentable
+        isRentable,
       ]);
 
       return NextResponse.json(
         {
           message: "Car added successfully",
-          carId: result.rows[0]?.car_id
+          carId: result.rows[0]?.car_id,
         },
         { status: 201 }
       );
