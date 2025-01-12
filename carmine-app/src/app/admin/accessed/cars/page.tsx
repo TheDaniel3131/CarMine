@@ -85,13 +85,24 @@ export default function AdminCarsPage() {
   const deleteCar = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this car?")) {
       try {
+        const response = await fetch(`/api/delete_cars`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete car");
+        }
+
+        // Only update the UI if the deletion was successful
         setCars(cars.filter((car) => car.car_id !== id));
       } catch (error) {
         console.error("Error deleting car:", error);
+        // You might want to show an error message to the user
+        alert("Failed to delete car. Please try again.");
       }
     }
   };
-
+  
   const filteredCars = cars.filter(
     (car) =>
       car.car_make.toLowerCase().includes(search.toLowerCase()) ||
