@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 // import { Client } from "pg";
 import { Pool } from "pg";
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 
 export const dynamic = "force-dynamic"; // Ensure the route is dynamic and not prerendered
 
@@ -20,11 +20,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    ca: fs
-      .readFileSync(
-        path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
-      )
-      .toString(),
+    // ca: fs
+    //   .readFileSync(
+    //     path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
+    //   )
+    //   .toString(),
   },
 });
 

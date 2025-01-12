@@ -3,7 +3,7 @@ import { Pool } from "pg";
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import { writeFile, mkdir } from 'fs/promises';
-import fs from "fs";
+// import fs from "fs";
 
 // Create a connection pool
 const pool = new Pool({
@@ -17,11 +17,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
   ssl: {
     rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    ca: fs
-      .readFileSync(
-        path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
-      )
-      .toString(),
+    // ca: fs
+    //   .readFileSync(
+    //     path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
+    //   )
+    //   .toString(),
   },
 });
 
