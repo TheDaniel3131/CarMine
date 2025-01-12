@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:5208";
+
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
@@ -15,7 +17,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const response = await fetch("http://localhost:5208/api/auth/register", {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
