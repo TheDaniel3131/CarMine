@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-// import nodemailer from "nodemailer";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";

@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
+import fs from "fs";
 
+// Create a connection pool
 const pool = new Pool({
   host: process.env.PGHOST,
-  port: parseInt(process.env.PGPORT || "5433"),
+  port: parseInt(process.env.PGPORT || "5432"), // Default PostgreSQL port
   user: process.env.PGUSER,
-  database: process.env.PGDATABASE,
   password: process.env.PGPASSWORD,
+  database: process.env.PGDATABASE,
+  max: 10, // Limit pool size for serverless
+  idleTimeoutMillis: 30000, // Close idle connections after 30s
+  connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
+  ssl: {
+    rejectUnauthorized: false, // For self-signed certificates; set to true for production
+    ca: fs.readFileSync("@/lib/us-east-1bundle.pem").toString(), // Path to the root certificate
+  },
 });
 
 interface CheckoutRequestBody {

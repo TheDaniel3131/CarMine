@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
-import { Client } from "pg";
+// import { Client } from "pg";
+import { Pool } from "pg";
+import fs from "fs";
 
 export const dynamic = "force-dynamic"; // Ensure the route is dynamic and not prerendered
 
 export async function GET(request: Request) {
-  const client = new Client({
+  // Create a connection pool
+  const pool = new Pool({
     host: process.env.PGHOST,
-    port: parseInt(process.env.PGPORT || "5433"),
+    port: parseInt(process.env.PGPORT || "5432"), // Default PostgreSQL port
     user: process.env.PGUSER,
-    database: process.env.PGDATABASE,
     password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    max: 10, // Limit pool size for serverless
+    idleTimeoutMillis: 30000, // Close idle connections after 30s
+    connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
+    ssl: {
+      rejectUnauthorized: false, // For self-signed certificates; set to true for production
+      ca: fs.readFileSync("@/lib/us-east-1bundle.pem").toString(), // Path to the root certificate
+    },
   });
 
-  await client.connect();
+  await pool.connect();
 
   try {
     const url = new URL(request.url);
@@ -26,7 +36,7 @@ export async function GET(request: Request) {
     }
 
     // Query the Users table for the email, only selecting the UserId
-    const result = await client.query(
+    const result = await pool.query(
       'SELECT "UserId" FROM public."Users" WHERE "Email" = $1',
       [email] // Prevent SQL injection by using parameterized queries
     );
@@ -44,6 +54,6 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   } finally {
-    await client.end();
+    await pool.end();
   }
 }
