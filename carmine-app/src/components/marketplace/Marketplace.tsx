@@ -47,6 +47,8 @@ interface Car {
   mileage: number;
   image_url: string;
   listed_date?: string; // Added for sorting by date
+  is_rentable?: boolean; // Added for DB cars
+  car_images?: string; // Added for S3 images
 }
 
 interface Category {
@@ -105,71 +107,126 @@ export default function MarketplacePage() {
     setDarkMode((prev) => !prev);
   }, []);
 
+  const getImageUrl = (car: Car) => {
+    // If it's a DB car with S3 image
+    if (car.car_images) {
+      // If the image URL is already a full S3 URL, use it directly
+      if (car.car_images.startsWith('https://')) {
+        return car.car_images;
+      }
+      // If it's just the key, construct the full S3 URL
+      return `https://carmine-listings/${car.car_images}`;
+    }
+    // If it's an API car with image_url
+    if (car.image_url) {
+      return car.image_url;
+    }
+    // Fallback to placeholder
+    return `https://placehold.co/400x300/e2e8f0/1e293b?text=${car.make}+${car.model}`;
+  };
+
+
   const fetchCars = useCallback(async () => {
     try {
       setLoading(true);
-      let url = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=100`;
+      let apiUrl = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=30`;
 
       if (selectedMake) {
-        url += `&make=${selectedMake}`;
+        apiUrl  += `&make=${selectedMake}`;
       } else if (searchTerm && !isSearchDisabled) {
-        url += `&make=${searchTerm}`; // Using make instead of search parameter
+        apiUrl  += `&make=${searchTerm}`; // Using make instead of search parameter
       }
 
       // Add sorting parameters
       switch (sortOption) {
         case "newest":
-          url += "&sort=listed_date:desc";
+          apiUrl  += "&sort=listed_date:desc";
           break;
         case "oldest":
-          url += "&sort=listed_date:asc";
+          apiUrl  += "&sort=listed_date:asc";
           break;
         case "price_high":
-          url += "&sort=price:desc";
+          apiUrl  += "&sort=price:desc";
           break;
         case "price_low":
-          url += "&sort=price:asc";
+          apiUrl  += "&sort=price:asc";
           break;
       }
 
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+            // Parallel fetch from both sources
+            const [apiResponse, dbResponse] = await Promise.all([
+              fetch(apiUrl, {
+                headers: { Accept: "application/json" },
+              }),
+              fetch("/api/buy") // Your DB endpoint
+            ]);
+      
+            if (!apiResponse.ok || !dbResponse.ok) {
+              throw new Error("Failed to fetch cars");
+            }
+      
+            const [apiData, dbData] = await Promise.all([
+              apiResponse.json(),
+              dbResponse.json()
+            ]);
+      
+      // Transform API cars
+      const apiCars: Car[] = apiData.records.map((car: {
+        id: string;
+        make: string;
+        model: string;
+        year: number;
+        trim: string;
+        price: string;
+        mileage: string;
+        primaryPhotoUrl: string;
+        listed_date: string;
+      }) => ({
+        id: car.id.toString(),
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        trim: car.trim,
+        price: parseFloat(car.price.replace("$", "").replace(",", "")),
+        mileage: parseInt(car.mileage.replace(" Miles", "").replace(",", "")),
+        image_url: car.primaryPhotoUrl,
+        listed_date: car.listed_date,
+      }));
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch cars");
-      }
+      // Transform DB cars to match API format
+      const dbCars: Car[] = dbData.map((car: {
+        car_id: string;
+        car_make: string;
+        car_model: string;
+        car_year: number;
+        car_trim?: string;
+        car_price: number;
+        car_mileage?: number;
+        car_images?: string;
+        listed_date?: string;
+        is_rentable?: boolean;
+      }) => ({
+        id: car.car_id,
+        make: car.car_make,
+        model: car.car_model,
+        year: car.car_year,
+        trim: car.car_trim || "", // Add default value if not in DB
+        price: car.car_price,
+        mileage: car.car_mileage || 0,
+        image_url: "", // We'll use car_images instead
+        car_images: car.car_images, // S3 image URL or key
+        listed_date: car.listed_date || new Date().toISOString(),
+        is_rentable: car.is_rentable
+      }));
 
-      const data = await response.json();
-
-      const transformedCars: Car[] = data.records.map(
-        (car: {
-          id: string;
-          make: string;
-          model: string;
-          year: number;
-          trim: string;
-          price: string;
-          mileage: string;
-          primaryPhotoUrl: string;
-          listed_date?: string;
-        }) => ({
-          id: car.id.toString(),
-          make: car.make,
-          model: car.model,
-          year: car.year,
-          trim: car.trim,
-          price: parseFloat(car.price.replace("$", "").replace(",", "")),
-          mileage: parseInt(car.mileage.replace(" Miles", "").replace(",", "")),
-          image_url: car.primaryPhotoUrl,
-          listed_date: car.listed_date,
-        })
-      );
+            // Combine and sort all cars
+            const allCars = [...apiCars, ...dbCars];
+      
+            // Sort combined results
+            const sortedCars = sortCars(allCars, sortOption);
 
       setCars((prevCars) =>
-        page === 1 ? transformedCars : [...prevCars, ...transformedCars]
+        page === 1 ? sortedCars  : [...prevCars, ...sortedCars]
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load cars");
@@ -177,6 +234,25 @@ export default function MarketplacePage() {
       setLoading(false);
     }
   }, [page, selectedMake, searchTerm, isSearchDisabled, sortOption]);
+
+
+    // Helper function to sort cars
+    const sortCars = (cars: Car[], sortOption: string) => {
+      return [...cars].sort((a, b) => {
+        switch (sortOption) {
+          case "newest":
+            return new Date(b.listed_date || "").getTime() - new Date(a.listed_date || "").getTime();
+          case "oldest":
+            return new Date(a.listed_date || "").getTime() - new Date(b.listed_date || "").getTime();
+          case "price_high":
+            return b.price - a.price;
+          case "price_low":
+            return a.price - b.price;
+          default:
+            return 0;
+        }
+      });
+    };
 
   // Update search suggestions when search term changes
   useEffect(() => {
@@ -270,6 +346,82 @@ export default function MarketplacePage() {
       router.push("/signin");
     }
   };
+
+    // Modify the car card to show rentable status if available
+    const renderCarCard = (car: Car) => (
+      <div
+        key={car.id}
+        className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105"
+      >
+        <div className="relative w-full h-48">
+          <Image
+            src={getImageUrl(car)}
+            alt={`${car.make} ${car.model}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => {
+            // Fallback to a reliable placeholder service if the image fails to load
+            const imgElement = document.querySelector(`img[alt="${car.make} ${car.model}"]`) as HTMLImageElement;
+            if (imgElement) {
+              imgElement.src = `https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image`;
+            }
+            }}
+            priority={false}
+          />
+        </div>
+        <div className="p-6">
+          <h3 className="text-xl font-bold mb-2">
+            {car.make} {car.model} {car.year}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            {car.trim}
+          </p>
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+              ${car.price.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {car.mileage > 0 ? `${car.mileage.toLocaleString()} miles` : 'N/A'}
+            </p>
+          </div>
+          {car.listed_date && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Listed: {new Date(car.listed_date).toLocaleDateString()}
+            </p>
+          )}
+          {car.is_rentable !== undefined && (
+            <p className="text-sm mt-2">
+              <span className={`px-2 py-1 rounded-full ${
+                car.is_rentable 
+                  ? "bg-green-200 text-green-800" 
+                  : "bg-red-200 text-red-800"
+              }`}>
+                {car.is_rentable ? "Available for Rent" : "Purchase Only"}
+              </span>
+            </p>
+          )}
+          <Button
+            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => handleViewDetails(car.id)}
+          >
+            {isAuthenticated ? (
+              <>
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                View Details
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                Sign In to View
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    );
+  
+
 
   return (
     <div
@@ -439,63 +591,10 @@ export default function MarketplacePage() {
               <div className="text-red-500 text-center mb-8">{error}</div>
             )}
 
-            {filteredCars.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCars.map((car) => (
-                  <div
-                    key={car.id}
-                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105"
-                  >
-                    <Image
-                      src={
-                        car.image_url || `/placeholder.svg?height=300&width=400`
-                      }
-                      alt={`${car.make} ${car.model}`}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold mb-2">
-                        {car.make} {car.model} {car.year}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        {car.trim}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                          ${car.price.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {car.mileage.toLocaleString()} miles
-                        </p>
-                      </div>
-                      {car.listed_date && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                          Listed:{" "}
-                          {new Date(car.listed_date).toLocaleDateString()}
-                        </p>
-                      )}
-                      <Button
-                        className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => handleViewDetails(car.id)}
-                      >
-                        {isAuthenticated ? (
-                          <>
-                            <ShoppingCart className="w-4 h-4 mr-2" />
-                            View Details
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="w-4 h-4 mr-2" />
-                            Sign In to View
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+      {filteredCars.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCars.map(car => renderCarCard(car))}
+        </div>
             ) : (
               <div className="text-center py-12">
                 <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
