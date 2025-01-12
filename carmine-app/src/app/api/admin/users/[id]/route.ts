@@ -2,6 +2,7 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
 
 export async function DELETE(
+  _: Request,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
