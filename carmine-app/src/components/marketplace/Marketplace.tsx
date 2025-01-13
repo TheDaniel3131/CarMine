@@ -114,8 +114,8 @@ export default function MarketplacePage() {
       if (car.car_images.startsWith('https://')) {
         return car.car_images;
       }
+      return `https://carmine-listings.s3.us-east-1.amazonaws.com/${car.car_images}`;
       // If it's just the key, construct the full S3 URL
-      return `https://carmine-listings/${car.car_images}`;
     }
     // If it's an API car with image_url
     if (car.image_url) {
