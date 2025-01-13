@@ -47,18 +47,18 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
-      // {
-      //   protocol: "http",
-      //   hostname: "carmine-listing",
-      //   port: "",
-      //   pathname: "/**",
-      // },
-      // {
-      //   protocol: "https",
-      //   hostname: "carmine-listing",
-      //   port: "",
-      //   pathname: "/**",
-      // },
+      {
+        protocol: "http",
+        hostname: "carmine-listing",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "carmine-listing",
+        port: "",
+        pathname: "/**",
+      },
       {
         protocol: "https",
         hostname: "content.homenetiol.com",
