@@ -107,7 +107,7 @@ export default function MarketplacePage() {
     setDarkMode((prev) => !prev);
   }, []);
 
-  const getImageUrl = (car: Car) => {
+  const getImageUrl = useCallback((car: Car) => {
     // If it's a DB car with S3 image
     if (car.car_images) {
       // If the image URL is already a full S3 URL, use it directly
@@ -115,15 +115,14 @@ export default function MarketplacePage() {
         return car.car_images;
       }
       return `https://carmine-listings.s3.us-east-1.amazonaws.com/${car.car_images}`;
-      // If it's just the key, construct the full S3 URL
     }
     // If it's an API car with image_url
     if (car.image_url) {
       return car.image_url;
     }
-    // Fallback to placeholder
-    // return `https://placehold.co/400x300/e2e8f0/1e293b?text=${car.make}+${car.model}`;
-  };
+    // Return placeholder directly instead of undefined
+    return 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image';
+  }, []);
 
 
   const fetchCars = useCallback(async () => {
@@ -355,17 +354,18 @@ export default function MarketplacePage() {
       >
         <div className="relative w-full h-48">
           <Image
-            src={getImageUrl(car) || 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image'}
+            src={getImageUrl(car)}
             alt={`${car.make} ${car.model}`}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            onError={() => {
-            // Fallback to a reliable placeholder service if the image fails to load
-            const imgElement = document.querySelector(`img[alt="${car.make} ${car.model}"]`) as HTMLImageElement;
-            if (imgElement) {
-              imgElement.src = `https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image`;
-            }
+            onError={(e) => {
+              // Cast the event target to HTMLImageElement
+              const img = e.target as HTMLImageElement;
+              // Only update if the current src isn't already the placeholder
+              if (img.src !== 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image') {
+                img.src = 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image';
+              }
             }}
             priority={false}
           />
