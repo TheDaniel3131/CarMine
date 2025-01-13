@@ -49,13 +49,13 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: "carmine-listing",
+        hostname: "carmine-listings.s3.us-east-1.amazonaws.com",
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "carmine-listing",
+        hostname: "carmine-listings.s3.us-east-1.amazonaws.com",
         port: "",
         pathname: "/**",
       },
