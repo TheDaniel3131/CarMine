@@ -208,7 +208,8 @@ export default function SellPage() {
             if (image) {
             // Create unique filename
             const fileName = `${Date.now()}-${image.name.replace(/\s/g, '_')}`;
-            const uploadUrl = `https://carmine-listings.s3.amazonaws.com/${fileName}`;
+
+            https: const uploadUrl = `https://carmine-listings.s3.us-east-1.amazonaws.com/${fileName}`;
 
             try {
                 // Upload to S3
