@@ -43,6 +43,14 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+      },
+      {
+        protocol: "http",
+        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+      },
+      {
+        protocol: "https",
         hostname: "assets.cai-media-management.com",
         port: "",
         pathname: "/**",

@@ -66,6 +66,20 @@ const nextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "https",
+        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+      },
+      {
+        protocol: "http",
+        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+      },
+      {
+        protocol: "https",
+        hostname: "content.homenetiol.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
         protocol: "http",
         hostname: "content.homenetiol.com",
         port: "",
