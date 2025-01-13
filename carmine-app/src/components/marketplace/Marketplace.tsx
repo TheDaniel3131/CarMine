@@ -122,7 +122,7 @@ export default function MarketplacePage() {
       return car.image_url;
     }
     // Fallback to placeholder
-    return `https://placehold.co/400x300/e2e8f0/1e293b?text=${car.make}+${car.model}`;
+    // return `https://placehold.co/400x300/e2e8f0/1e293b?text=${car.make}+${car.model}`;
   };
 
 
