@@ -87,9 +87,19 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "carmine-listings.s3.amazonaws.com",
+      },
+      {
+        protocol: "http",
+        hostname: "carmine-listings.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.max.auto",
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     return [

@@ -73,6 +73,14 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "carmine-listings.s3.amazonaws.com",
+      },
+      {
+        protocol: "http",
+        hostname: "carmine-listings.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "content.homenetiol.com",
         port: "",
         pathname: "/**",
@@ -98,6 +106,8 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     return [
