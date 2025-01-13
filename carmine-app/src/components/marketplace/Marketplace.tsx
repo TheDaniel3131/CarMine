@@ -355,7 +355,7 @@ export default function MarketplacePage() {
       >
         <div className="relative w-full h-48">
           <Image
-            src={getImageUrl(car)}
+            src={getImageUrl(car) || 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image'}
             alt={`${car.make} ${car.model}`}
             fill
             className="object-cover"
