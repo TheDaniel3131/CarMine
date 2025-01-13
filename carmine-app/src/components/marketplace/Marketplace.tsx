@@ -108,22 +108,17 @@ export default function MarketplacePage() {
   }, []);
 
   const getImageUrl = useCallback((car: Car) => {
-    // If it's a DB car with S3 image
-    if (car.car_images) {
-      // If the image URL is already a full S3 URL, use it directly
-      if (car.car_images.startsWith('https://')) {
-        return car.car_images;
-      }
-      return `https://carmine-listings.s3.us-east-1.amazonaws.com/${car.car_images}`;
-    }
-    // If it's an API car with image_url
-    if (car.image_url) {
-      return car.image_url;
-    }
-    // Return placeholder directly instead of undefined
-    return 'https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image';
-  }, []);
+    const url = car.car_images
+      ? car.car_images.startsWith("https://")
+        ? car.car_images
+        : `https://carmine-listings.s3.us-east-1.amazonaws.com/${car.car_images}`
+      : car.image_url
+      ? car.image_url
+      : "https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image";
 
+    console.log("Generated Image URL:", url);
+    return url;
+  }, []);
 
   const fetchCars = useCallback(async () => {
     try {
