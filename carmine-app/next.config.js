@@ -67,11 +67,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+        hostname: "placehold.co",
       },
       {
         protocol: "http",
-        hostname: "placehold.co/400x300/e2e8f0/1e293b?text=No+Image%27",
+        hostname: "placehold.co",
       },
       {
         protocol: "https",
