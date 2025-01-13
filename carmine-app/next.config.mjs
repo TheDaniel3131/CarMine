@@ -2,6 +2,18 @@
 const nextConfig = {
   trailingSlash: true,
   images: {
+    domains: [
+      "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+      "auto.dev",
+      "www.motorcarmarkdown.com",
+      "vehicle-photos-published.vauto.com",
+      "pictures.dealer.com",
+      "cdn.max.auto",
+      "assets.cai-media-management.com",
+      "carmine-listings.s3.us-east-1.amazonaws.com",
+      "content.homenetiol.com",
+      "placehold.co",
+    ],
     remotePatterns: [
       {
         protocol: "https",

@@ -211,6 +211,8 @@ export default function SellPage() {
 
             const uploadUrl = `https://carmine-listings.s3.us-east-1.amazonaws.com/${fileName}`;
 
+            console.log(uploadUrl);
+
             try {
                 // Upload to S3
                 const uploadResult = await fetch(uploadUrl, {
