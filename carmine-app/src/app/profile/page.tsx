@@ -17,14 +17,14 @@ import Footer from "@/components/Footer";
 interface CarRecord {
   id: string;
   model: string;
-  type: "rental" | "purchase";
+  type: "Rental" | "Purchase";
   date: string;
   price: number;
   status: "active" | "completed" | "upcoming";
 }
 
 export default function CarRecordTracker() {
-  const [filter, setFilter] = useState<"all" | "rental" | "purchase">("all");
+  const [filter, setFilter] = useState<"all" | "Rental" | "Purchase">("all");
   const [carRecords, setCarRecords] = useState<CarRecord[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -127,7 +127,7 @@ export default function CarRecordTracker() {
               Your Car Records
             </CardTitle>
             <Select
-              onValueChange={(value: "all" | "rental" | "purchase") =>
+              onValueChange={(value: "all" | "Rental" | "Purchase") =>
                 setFilter(value)
               }
             >
