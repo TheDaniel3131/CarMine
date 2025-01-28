@@ -20,6 +20,7 @@ import "../globals.css";
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
@@ -28,7 +29,6 @@ export default function SigninPage() {
     if (typeof window !== "undefined") {
       try {
         window.localStorage.setItem(key, value);
-        // Verify the value was stored
         const storedValue = window.localStorage.getItem(key);
         console.log(`Stored ${key}:`, storedValue);
         if (storedValue !== value) {
@@ -58,19 +58,15 @@ export default function SigninPage() {
       if (response.ok) {
         console.log("Login successful:", data);
 
-        // First store the email
-        if (email) {
+        if (rememberMe && email) {
           saveToLocalStorage("userEmail", email);
         }
 
-        // Then handle the login
         login(data.token, { email: email });
 
-        // Double-check storage before redirect
         const storedEmail = window.localStorage.getItem("userEmail");
         console.log("Verification - Stored email:", storedEmail);
 
-        // Redirect to homepage
         router.push("/");
       } else {
         setError(data.message || "Login failed");
@@ -83,20 +79,20 @@ export default function SigninPage() {
 
   return (
     <section className="container mx-auto px-4 py-20 md:py-24">
-      <h1 className="text-3xl font-bold text-center mb-6">Welcome Back</h1>
-      <div className="max-w-md mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>
-              Enter your credentials to access your account
+      <h1 className="text-4xl font-bold text-center mb-8">Welcome Back</h1>
+      <div className="max-w-lg mx-auto">
+        <Card className="shadow-lg rounded-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">User Login</CardTitle>
+            <CardDescription className="text-gray-500">
+              Please enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">Email</Label>
+              <div className="grid w-full items-center gap-6">
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="email" className="text-lg">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -104,10 +100,11 @@ export default function SigninPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="password">Password</Label>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="password" className="text-lg">Password</Label>
                   <Input
                     id="password"
                     type="password"
@@ -115,16 +112,35 @@ export default function SigninPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+                <div className="flex items-center space-x-3">
+                  <input
+                    id="rememberMe"
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <Label htmlFor="rememberMe" className="text-base">
+                    Remember Me
+                  </Label>
+                </div>
               </div>
-              {error && <p className="text-red-500 mt-2">{error}</p>}
-              <Button className="w-full mt-4" type="submit">
+              {error && <p className="text-red-500 mt-4">{error}</p>}
+              <Button className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300" type="submit">
                 Login
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between mt-4">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </Link>
             <Link
               href="/signup"
               className="text-sm text-blue-600 hover:underline"
