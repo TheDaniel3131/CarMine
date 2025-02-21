@@ -1,20 +1,23 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeContext";
+import { CookieConsent } from "@/components/cookies/CookiesPolicy";
+import { ChatWidget } from "@/components/chat-widget/ChatWidget";
 import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'CarMine - Revolutionize Your Car Experience',
-  description: 'Buy, sell, and rent cars with ease. Find auto parts and join a community of car enthusiasts.',
-}
+  title: "CarMine - Revolutionize Your Car Experience",
+  description:
+    "Buy, sell, and rent cars with ease. Find auto parts and join a community of car enthusiasts.",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -36,7 +39,11 @@ export default function RootLayout({
             />
             <link rel="manifest" href="/site.webmanifest" />
           </head>
-          <body className={inter.className}>{children}</body>
+          <body className={inter.className}>
+            {children}
+            <CookieConsent />
+            <ChatWidget />
+          </body>
         </AuthProvider>
       </ThemeProvider>
     </html>

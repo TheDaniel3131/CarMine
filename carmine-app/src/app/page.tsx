@@ -125,7 +125,7 @@ export default function CarMine() {
               icon: Car,
               title: "Buy Your Dream Cars",
               description:
-          "Thinking of a dream car that you always wanted to buy? Browse our wide range of vehicles to find one that suits you. From SUVs to sedans, we've got you all!",
+                "Thinking of a dream car that you always wanted to buy? Browse our wide range of vehicles to find one that suits you. From SUVs to sedans, we've got you all!",
               action: "Buy Now",
               link: "/marketplace",
             },
@@ -133,7 +133,7 @@ export default function CarMine() {
               icon: ShoppingBag,
               title: "Sell Your Own Cars",
               description:
-          "CarMine allows you to sell your car with ease with our streamlined process in just minutes! Upload your photos, set your price and your car details. You are ready to go!",
+                "CarMine allows you to sell your car with ease with our streamlined process in just minutes! Upload your photos, set your price and your car details. You are ready to go!",
               action: "Sell Now",
               link: "/sell",
             },
@@ -141,7 +141,7 @@ export default function CarMine() {
               icon: Key,
               title: "Car Rentals",
               description:
-          "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and car selections.",
+                "Rent vehicles for any occasion from economy to luxury with flexible plans and availability. CarMine covers you with excellent customer service and car selections.",
               action: "Rent Now",
               link: "/sell",
             },
@@ -149,40 +149,40 @@ export default function CarMine() {
             <div
               key={index}
               className={`${
-          darkMode ? "bg-gray-800" : "bg-white"
+                darkMode ? "bg-gray-800" : "bg-white"
               } p-8 rounded-2xl shadow-xl transform transition-transform duration-500 hover:scale-105`}
             >
               <div className="flex justify-center mb-6">
-          <item.icon
-            className={`w-20 h-20 ${
-              darkMode ? "text-blue-400" : "text-blue-600"
-            }`}
-          />
+                <item.icon
+                  className={`w-20 h-20 ${
+                    darkMode ? "text-blue-400" : "text-blue-600"
+                  }`}
+                />
               </div>
               <h2
-          className={`text-2xl font-bold mb-4 text-center ${
-            darkMode ? "text-gray-100" : "text-gray-800"
-          }`}
+                className={`text-2xl font-bold mb-4 text-center ${
+                  darkMode ? "text-gray-100" : "text-gray-800"
+                }`}
               >
-          {item.title}
+                {item.title}
               </h2>
               <p
-          className={`${
-            darkMode ? "text-gray-300" : "text-gray-600"
-          } mb-6 text-center`}
+                className={`${
+                  darkMode ? "text-gray-300" : "text-gray-600"
+                } mb-6 text-center`}
               >
-          {item.description}
+                {item.description}
               </p>
               <Link href={item.link}>
-          <Button
-            className={`w-full ${
-              darkMode
-                ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-            } text-white text-lg font-semibold py-6`}
-          >
-            {item.action}
-          </Button>
+                <Button
+                  className={`w-full ${
+                    darkMode
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                      : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                  } text-white text-lg font-semibold py-6`}
+                >
+                  {item.action}
+                </Button>
               </Link>
             </div>
           ))}
@@ -212,7 +212,7 @@ export default function CarMine() {
               },
               {
                 icon: Shield,
-                title: "Expert Support",
+                title: "Quick Support",
                 description:
                   "Our team of automotive experts is always ready to assist you.",
               },

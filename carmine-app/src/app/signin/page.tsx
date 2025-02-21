@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,20 @@ export default function SigninPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedEmail = window.localStorage.getItem("userEmail");
+      const storedPassword = window.localStorage.getItem("userPassword");
+      if (storedEmail) {
+        setEmail(storedEmail);
+        setRememberMe(true);
+      }
+      if (storedPassword) {
+        setPassword(storedPassword);
+      }
+    }
+  }, []);
 
   const saveToLocalStorage = (key: string, value: string) => {
     if (typeof window !== "undefined") {
@@ -58,14 +72,15 @@ export default function SigninPage() {
       if (response.ok) {
         console.log("Login successful:", data);
 
-        if (rememberMe && email) {
+        if (rememberMe) {
           saveToLocalStorage("userEmail", email);
+          saveToLocalStorage("userPassword", password);
+        } else {
+          window.localStorage.removeItem("userEmail");
+          window.localStorage.removeItem("userPassword");
         }
 
         login(data.token, { email: email });
-
-        const storedEmail = window.localStorage.getItem("userEmail");
-        console.log("Verification - Stored email:", storedEmail);
 
         router.push("/");
       } else {
