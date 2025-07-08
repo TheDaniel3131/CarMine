@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, Menu, Sun, Moon, Inbox, LogOut, User} from "lucide-react";
+import { Car, Menu, Sun, Moon, Inbox, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
