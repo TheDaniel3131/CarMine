@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
-// import fs from "fs";
-// import path from "path";
 
 // Create a connection pool
 const pool = new Pool({
@@ -13,14 +11,6 @@ const pool = new Pool({
   max: 10, // Limit pool size for serverless
   idleTimeoutMillis: 30000, // Close idle connections after 30s
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
-  ssl: {
-    rejectUnauthorized: false, // For self-signed certificates; set to true for production
-    // ca: fs
-    //   .readFileSync(
-    //     path.join(process.cwd(), "src", "lib", "us-east-1-bundle.pem")
-    //   )
-    //   .toString(),
-  },
 });
 
 export const dynamic = "force-dynamic";
@@ -37,7 +27,7 @@ export async function POST(request: Request) {
     const price = data.car_price;
     const mileage = data.car_mileage;
     const description = data.car_description;
-    const imageUrl = data.car_image_url; // This will be the S3 URL
+    const imageUrl = data.car_image_url; 
     const isRentable = data.is_rentable;
 
     // Validation

@@ -56,7 +56,7 @@ interface Category {
   makes: string[];
 }
 
-const API_KEY = "ZrQEPSkKZGFuYWVscG9oMzEzMUBnbWFpbC5jb20=";
+const API_KEY = process.env.API_KEY;
 
 const categories: Category[] = [
   {
@@ -109,21 +109,11 @@ export default function MarketplacePage() {
 
   const getImageUrl = useCallback((car: Car) => {
     const url = car.car_images
-      ? car.car_images.includes("us-east-1")
+      ? car.car_images.startsWith("http") || car.car_images.startsWith("https")
         ? car.car_images
-        : car.car_images.startsWith(
-            "https://carmine-listings.s3.amazonaws.com/"
-          )
-        ? car.car_images.replace(
-            "https://carmine-listings.s3.amazonaws.com/",
-            "https://carmine-listings.s3.us-east-1.amazonaws.com/"
-          )
-        : `https://carmine-listings.s3.us-east-1.amazonaws.com/${car.car_images}`
-      : car.image_url
-      ? car.image_url
-      : "https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image";
-
-    console.log("Generated Image URL:", url);
+        : `/uploads/${car.car_images}`
+      : car.image_url ||
+        "https://placehold.co/400x300/e2e8f0/1e293b?text=No+Image";
     return url;
   }, []);
 
