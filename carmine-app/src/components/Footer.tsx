@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Facebook, Instagram, Twitter } from "lucide-react";
-
-interface FooterProps {
-  darkMode: boolean;
-}
+import { FooterProps } from "@/lib/interfaces";
 
 export default function Footer({ darkMode }: FooterProps) {
+  const socialLinks = {
+    facebook: "https://facebook.com/carmine",
+    instagram: "https://instagram.com/carmine",
+    twitter: "https://twitter.com/carmine",
+  };
+
   return (
     <footer
       className={`${
@@ -76,19 +79,29 @@ export default function Footer({ darkMode }: FooterProps) {
             <h3 className="text-2xl font-bold mb-4">Connect With Us</h3>
             <div className="flex space-x-4">
               {[
-                { name: "Facebook", icon: Facebook },
-                { name: "Instagram", icon: Instagram },
-                { name: "Twitter", icon: Twitter },
+                {
+                  name: "Facebook",
+                  icon: Facebook,
+                  link: socialLinks.facebook,
+                },
+                {
+                  name: "Instagram",
+                  icon: Instagram,
+                  link: socialLinks.instagram,
+                },
+                { name: "Twitter", icon: Twitter, link: socialLinks.twitter },
               ].map((platform) => (
                 <a
                   key={platform.name}
-                  href="#"
+                  href={platform.link}
                   className={`${
                     darkMode
                       ? "text-gray-300 hover:text-blue-400"
                       : "text-blue-100 hover:text-white"
                   } transition-colors`}
                   aria-label={platform.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <platform.icon className="h-6 w-6" />
                 </a>

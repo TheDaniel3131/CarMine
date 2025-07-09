@@ -1,57 +1,87 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  loading: boolean; // Add the loading property to the context
-  user: { email: string } | null; // Add the user property to the context
-  login: (token: string, userData: { email: string }) => void;
-  logout: () => void;
-}
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { AuthContextType } from "@/lib/interfaces";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // Initialize loading state
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if there's a token in localStorage on initial load
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsAuthenticated(true);
-      setLoading(false); // Set loading to false once the token is checked
-    }
+    // Check authentication status on mount
+    const checkAuth = () => {
+      const loginStatus = localStorage.getItem("isLoggedIn");
+      const sessionEmail = localStorage.getItem("sessionEmail"); // Use different key for session
+
+      if (loginStatus === "true" && sessionEmail) {
+        setIsAuthenticated(true);
+        setUserEmail(sessionEmail);
+      } else {
+        // Clear only authentication data
+        clearAuthData();
+      }
+      setLoading(false);
+    };
+
+    checkAuth();
   }, []);
 
-  const login = (token: string, userData: { email: string }) => {
-    setUser(userData);
-    localStorage.setItem('authToken', token);
-    localStorage.setItem("userEmail", userData.email);
+  const clearAuthData = () => {
+    // Clear only session/authentication data
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("sessionEmail"); // Clear session email
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("userPreferences");
+
+    // DO NOT touch userEmail and userPassword - they're for "Remember Me"
+
+    setIsAuthenticated(false);
+    setUserEmail(null);
+  };
+
+  const login = (email: string, token?: string) => {
+    // Store session data (separate from remember me data)
+    localStorage.setItem("sessionEmail", email); // Use different key
+    localStorage.setItem("isLoggedIn", "true");
+    if (token) {
+      localStorage.setItem("userToken", token);
+    }
+
+    // Update state
     setIsAuthenticated(true);
-    setLoading(false); // Set loading to false once the token is set
+    setUserEmail(email);
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('authToken');
-    setIsAuthenticated(false);
-    setLoading(false);
+    // Only clear session data, preserve remember me data
+    clearAuthData();
   };
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const value = {
+    isAuthenticated,
+    userEmail,
+    login,
+    logout,
+    loading,
+  };
 
-export const useAuth = () => {
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
+}

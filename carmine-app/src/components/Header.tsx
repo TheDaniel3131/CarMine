@@ -13,12 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/components/contexts/AuthContext";
-
-interface HeaderProps {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
-  unreadMessages: number;
-}
+import { HeaderProps } from "@/lib/interfaces";
 
 export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
   const [progress, setProgress] = useState(0);

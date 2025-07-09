@@ -47,12 +47,19 @@ export default function SigninPage() {
     if (typeof window !== "undefined") {
       const storedEmail = window.localStorage.getItem("userEmail");
       const storedPassword = window.localStorage.getItem("userPassword");
-      if (storedEmail) {
+      if (storedEmail && storedPassword) {
         setEmail(storedEmail);
-        setRememberMe(true);
-      }
-      if (storedPassword) {
         setPassword(storedPassword);
+        setRememberMe(true);
+        console.log("Loaded stored credentials:", {
+          email: storedEmail,
+          hasPassword: !!storedPassword,
+        });
+      } else {
+        setEmail("");
+        setPassword("");
+        setRememberMe(false);
+        console.log("No stored credentials found");
       }
     }
   }, []);
@@ -93,13 +100,15 @@ export default function SigninPage() {
         if (rememberMe) {
           saveToLocalStorage("userEmail", email);
           saveToLocalStorage("userPassword", password);
+          console.log("Saved credentials to localStorage");
         } else {
+          // Clear stored credentials if remember me is unchecked
           window.localStorage.removeItem("userEmail");
           window.localStorage.removeItem("userPassword");
+          console.log("Cleared stored credentials");
         }
 
-        login(data.token, { email: email });
-
+        login(email, data.token);
         router.push("/");
       } else {
         setError(data.message || "Login failed");
@@ -116,6 +125,10 @@ export default function SigninPage() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={unreadMessages}
+        onLogout={() => {
+          console.log("Logout clicked");
+          // Implement logout functionality here
+        }}
       />
       <section className="container mx-auto px-4 py-20 md:py-24 bg-gray-100 dark:bg-gray-900">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800 dark:text-white">
