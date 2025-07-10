@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeContext";
-import { CookieConsent } from "@/components/cookies/CookiesPolicy";
+import CookieConsent from "@/components/user/UserPreferences";
 import { ChatWidget } from "@/components/chat-widget/ChatWidget";
 import "./globals.css";
 

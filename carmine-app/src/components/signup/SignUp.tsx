@@ -78,6 +78,7 @@ export default function SignUpPage() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={unreadMessages}
+        onLogout={() => console.log("Logout clicked")}
       />
       <section className="container mx-auto px-4 py-12 md:py-16 bg-gray-100 dark:bg-gray-900">
         <div className="max-w-md mx-auto">

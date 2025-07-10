@@ -39,11 +39,16 @@ export default function InboxPage() {
       content:
         "We have received your inquiry and will get back to you shortly.",
       read: true,
-
     },
   ]);
 
-  const [selectedMessage, setSelectedMessage] = useState<null | { id: number; from: string; subject: string; content: string; read: boolean; }>(null);
+  const [selectedMessage, setSelectedMessage] = useState<null | {
+    id: number;
+    from: string;
+    subject: string;
+    content: string;
+    read: boolean;
+  }>(null);
   const [unreadMessages, setUnreadMessages] = useState(2);
 
   useEffect(() => {
@@ -58,7 +63,13 @@ export default function InboxPage() {
     setDarkMode(!darkMode);
   };
 
-  const handleMessageClick = (message: { id: number; from: string; subject: string; content: string; read: boolean; }) => {
+  const handleMessageClick = (message: {
+    id: number;
+    from: string;
+    subject: string;
+    content: string;
+    read: boolean;
+  }) => {
     setSelectedMessage(message);
     if (!message.read) {
       setMessages(
@@ -67,7 +78,6 @@ export default function InboxPage() {
       setUnreadMessages((prev) => prev - 1);
     }
   };
-
 
   const handleDeleteMessage = (id: number) => {
     setMessages(messages.filter((m) => m.id !== id));
@@ -86,6 +96,7 @@ export default function InboxPage() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={unreadMessages}
+        onLogout={() => console.log("Logout clicked")}
       />
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">Inbox</h1>
@@ -134,11 +145,8 @@ export default function InboxPage() {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-
                         }}
-                      >
-          
-                      </Button>
+                      ></Button>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -173,7 +181,6 @@ export default function InboxPage() {
                   </CardHeader>
                   <CardContent>
                     <p>{selectedMessage.content}</p>
-              
                   </CardContent>
                 </>
               ) : (

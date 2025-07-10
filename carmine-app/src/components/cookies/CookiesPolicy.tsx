@@ -1,128 +1,242 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-export function CookieConsent() {
-  const [open, setOpen] = useState(false);
-  const [preferences, setPreferences] = useState({
-    necessary: true,
-    functional: false,
-    analytics: false,
-    marketing: false,
-  });
+export default function CookiePolicyPage() {
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // Check if user has already set cookie preferences
-    const hasConsent = localStorage.getItem("cookie-consent");
-    if (!hasConsent) {
-      setOpen(true);
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-  }, []);
+  }, [darkMode]);
 
-  const handleSave = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify(preferences));
-    // Here you would typically set the actual cookies based on preferences
-    setOpen(false);
-  };
-
-  const handleAcceptAll = () => {
-    const allEnabled = {
-      necessary: true,
-      functional: true,
-      analytics: true,
-      marketing: true,
-    };
-    setPreferences(allEnabled);
-    localStorage.setItem("cookie-consent", JSON.stringify(allEnabled));
-    setOpen(false);
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Cookie Preferences</DialogTitle>
-          <DialogDescription>
-            We use cookies to enhance your browsing experience, serve
-            personalized ads or content, and analyze our traffic. By clicking
-            &quot;Accept All&quot;, you consent to our use of cookies.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="necessary" className="flex flex-col space-y-1">
-              <span>Necessary Cookies</span>
-              <span className="font-normal text-sm text-muted-foreground">
-                Required for the website to function properly. Cannot be
-                disabled.
-              </span>
-            </Label>
-            <Switch id="necessary" checked={preferences.necessary} disabled />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="functional" className="flex flex-col space-y-1">
-              <span>Functional Cookies</span>
-              <span className="font-normal text-sm text-muted-foreground">
-                Enable personalized features and save your preferences.
-              </span>
-            </Label>
-            <Switch
-              id="functional"
-              checked={preferences.functional}
-              onCheckedChange={(checked: boolean) =>
-                setPreferences((prev) => ({ ...prev, functional: checked }))
-              }
-            />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="analytics" className="flex flex-col space-y-1">
-              <span>Analytics Cookies</span>
-              <span className="font-normal text-sm text-muted-foreground">
-                Help us understand how visitors interact with the website.
-              </span>
-            </Label>
-            <Switch
-              id="analytics"
-              checked={preferences.analytics}
-              onCheckedChange={(checked: boolean) =>
-                setPreferences((prev) => ({ ...prev, analytics: checked }))
-              }
-            />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="marketing" className="flex flex-col space-y-1">
-              <span>Marketing Cookies</span>
-              <span className="font-normal text-sm text-muted-foreground">
-                Used to deliver personalized advertisements.
-              </span>
-            </Label>
-            <Switch
-              id="marketing"
-              checked={preferences.marketing}
-              onCheckedChange={(checked: boolean) =>
-                setPreferences((prev) => ({ ...prev, marketing: checked }))
-              }
-            />
-          </div>
+    <div
+      className={`min-h-screen ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 text-gray-900"
+      }`}
+    >
+      <Header
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        unreadMessages={0} // Add this prop with a default value
+        onLogout={() => console.log("Logout clicked")} // Add a dummy logout function
+      />
+
+      <main className="container mx-auto px-4 py-7 md:py-10">
+        <h1
+          className={`text-5xl md:text-7xl md:leading-tight font-bold text-center mb-12 text-transparent bg-clip-text ${
+            darkMode
+              ? "bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400"
+              : "bg-gradient-to-r from-blue-400 via-blue-600 to-purple-600"
+          }`}
+        >
+          Cookies Policy
+        </h1>
+
+        <div className="max-w-4xl mx-auto space-y-8">
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              What Are Cookies
+            </h2>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              Cookies are small text files that are stored on your computer or
+              mobile device when you visit our website. They help us make your
+              experience better by remembering your preferences and
+              understanding how you use our platform.
+            </p>
+          </section>
+
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              How We Use Cookies
+            </h2>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              We use different types of cookies for different purposes:
+            </p>
+
+            <h3
+              className={`text-2xl font-semibold mt-6 mb-3 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Necessary Cookies
+            </h3>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              These cookies are essential for the website to function properly.
+              They enable basic functions like page navigation and access to
+              secure areas of the website. The website cannot function properly
+              without these cookies.
+            </p>
+
+            <h3
+              className={`text-2xl font-semibold mt-6 mb-3 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Functional Cookies
+            </h3>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              These cookies enable us to provide enhanced functionality and
+              personalization. They may be set by us or by third-party providers
+              whose services we have added to our pages. If you do not allow
+              these cookies, some or all of these services may not function
+              properly.
+            </p>
+
+            <h3
+              className={`text-2xl font-semibold mt-6 mb-3 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Analytics Cookies
+            </h3>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              These cookies help us understand how visitors interact with our
+              website by collecting and reporting information anonymously. This
+              helps us improve our website structure and content.
+            </p>
+
+            <h3
+              className={`text-2xl font-semibold mt-6 mb-3 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Marketing Cookies
+            </h3>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              These cookies are used to track visitors across websites. The
+              intention is to display ads that are relevant and engaging for the
+              individual user.
+            </p>
+          </section>
+
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Specific Cookies We Use
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full mt-4">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Cookie Name</th>
+                    <th className="text-left py-2">Type</th>
+                    <th className="text-left py-2">Purpose</th>
+                    <th className="text-left py-2">Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="py-2">session_id</td>
+                    <td>Necessary</td>
+                    <td>Maintains user session</td>
+                    <td>Session</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2">preferences</td>
+                    <td>Functional</td>
+                    <td>Stores user preferences</td>
+                    <td>1 year</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2">_ga</td>
+                    <td>Analytics</td>
+                    <td>Google Analytics tracking</td>
+                    <td>2 years</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2">_fbp</td>
+                    <td>Marketing</td>
+                    <td>Facebook pixel tracking</td>
+                    <td>3 months</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Managing Cookies
+            </h2>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              You can control and/or delete cookies as you wish. You can delete
+              all cookies that are already on your computer and you can set most
+              browsers to prevent them from being placed. However, if you do
+              this, you may have to manually adjust some preferences every time
+              you visit our site and some services and functionalities may not
+              work.
+            </p>
+          </section>
+
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Updates to This Policy
+            </h2>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              We may update this Cookie Policy from time to time. We encourage
+              you to periodically review this page for the latest information on
+              our cookie practices.
+            </p>
+          </section>
+
+          <section>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              Contact Us
+            </h2>
+            <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+              If you have any questions about our use of cookies, please contact
+              us at:
+              <br />
+              Email: privacy@carmine.com
+              <br />
+              Address: No. 123, Jalan Ampang, 50450 Kuala Lumpur, Selangor,
+              Malaysia.
+            </p>
+          </section>
+
+          <p className="text-sm text-muted-foreground mt-8">
+            Last updated: {new Date().toLocaleDateString()}
+          </p>
         </div>
-        <DialogFooter className="flex-col sm:flex-row sm:space-x-2">
-          <Button variant="outline" onClick={handleSave}>
-            Save Preferences
-          </Button>
-          <Button onClick={handleAcceptAll}>Accept All</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </main>
+
+      <Footer darkMode={darkMode} />
+    </div>
   );
 }

@@ -110,6 +110,7 @@ export default function CarRecordTracker() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={unreadMessages}
+        onLogout={() => console.log("Logout clicked")}
       />
       <main className="container mx-auto p-4 max-w-6xl mb-16 px-4 py-10 md:py-12 dark:bg-gray-800 dark:text-gray-100">
         <div className="mb-4">

@@ -295,6 +295,7 @@ export default function SellPage() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={0}
+        onLogout={() => console.log("Logout clicked")}
       />
       <main className="container mx-auto px-4 py-10 md:py-12">
         <h1

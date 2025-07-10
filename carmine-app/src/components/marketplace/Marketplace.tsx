@@ -436,6 +436,7 @@ export default function MarketplacePage() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={0}
+        onLogout={() => console.log("Logout clicked")}
       />
 
       <main className="container mx-auto px-6 py-10 md:py-12">
