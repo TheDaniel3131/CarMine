@@ -11,14 +11,14 @@ export const metadata: Metadata = {
     "Buy, sell, and rent cars with ease. Find auto parts and join a community of car enthusiasts.",
 };
 
-export default function RootLayout({
+export default function ContactLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <head>
+      <head suppressHydrationWarning={true}>
         <link
           rel="icon"
           type="image/png"
@@ -35,7 +35,9 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <AuthProvider>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className} suppressHydrationWarning={true}>
+          {children}
+        </body>
       </AuthProvider>
     </html>
   );

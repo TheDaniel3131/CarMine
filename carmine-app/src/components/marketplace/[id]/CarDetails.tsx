@@ -31,6 +31,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useParams } from "next/navigation";
 
 interface CarDetails {
   id: string;
@@ -53,9 +54,13 @@ interface CarDetails {
   condition?: string;
 }
 
-const API_KEY = "ZrQEPSkKZGFuYWVscG9oMzEzMUBnbWFpbC5jb20=";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-export default function CarDetailsPage({ params }: { params: { id: string } }) {
+// { params }: { params: { id: string } }
+export default function CarDetailsPage() {
+  const params = useParams();
+  const id = params?.id as string;
+
   const [darkMode, setDarkMode] = useState(false);
   const [car, setCar] = useState<CarDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,7 +84,7 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
 
         const data = await response.json();
         const carRecord = data.records.find(
-          (record: { id: number }) => record.id.toString() === params.id
+          (record: { id: number }) => record.id.toString() === id
         );
 
         if (!carRecord) {
@@ -119,7 +124,7 @@ export default function CarDetailsPage({ params }: { params: { id: string } }) {
     };
 
     fetchCarDetails();
-  }, [params.id]);
+  }, [id]);
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
