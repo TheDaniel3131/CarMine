@@ -32,7 +32,16 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
   try {
-    const userId = req.url.split("/").pop();
+    const url = new URL(req.url);
+    const userId = url.searchParams.get("id");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "User ID is required." },
+        { status: 400 }
+      );
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
       method: "DELETE",
       headers: {
