@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const response = await fetch(`http://localhost:3000/api/item/${params.id}`);
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const response = await fetch(`http://localhost:3000/api/item/${id}`);
 
   if (!response.ok) {
     notFound(); // This will render your custom 404 page
