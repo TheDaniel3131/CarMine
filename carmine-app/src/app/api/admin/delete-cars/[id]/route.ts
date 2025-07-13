@@ -11,28 +11,30 @@ const pool = new Pool({
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
 });
 
 export const dynamic = "force-dynamic";
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!params.id) {
+  const { id } = await params;
+
+  if (!id) {
     return NextResponse.json({ error: "Car ID is required" }, { status: 400 });
   }
 
   try {
     // Log the received ID and query for debugging
-    console.log("Attempting to delete car with ID:", params.id);
+    console.log("Attempting to delete car with ID:", id);
 
     const result = await pool.query(
       "DELETE FROM car WHERE car_id = $1 RETURNING *",
-      [params.id]
+      [id]
     );
 
     console.log("Delete operation result:", result);
@@ -47,10 +49,11 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("Database query error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       { error: "Failed to delete car", details: errorMessage },
       { status: 500 }
     );
-  } 
+  }
 }
