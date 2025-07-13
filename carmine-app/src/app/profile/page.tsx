@@ -17,14 +17,14 @@ import Footer from "@/components/Footer";
 interface CarRecord {
   id: string;
   model: string;
-  type: "Rental" | "Purchase";
+  type: "rental" | "purchase";
   date: string;
   price: number;
   status: "active" | "completed" | "upcoming";
 }
 
 export default function CarRecordTracker() {
-  const [filter, setFilter] = useState<"all" | "Rental" | "Purchase">("all");
+  const [filter, setFilter] = useState<"all" | "rental" | "purchase">("all");
   const [carRecords, setCarRecords] = useState<CarRecord[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -76,7 +76,7 @@ export default function CarRecordTracker() {
         // Fetch car records for the retrieved userId
         const recordsResponse = await fetch(`/api/profile/${userId}`);
         const records = await recordsResponse.json();
-        setCarRecords(records);
+        setCarRecords(Array.isArray(records) ? records : []);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -128,7 +128,7 @@ export default function CarRecordTracker() {
               Your Car Records
             </CardTitle>
             <Select
-              onValueChange={(value: "all" | "Rental" | "Purchase") =>
+              onValueChange={(value: "all" | "rental" | "purchase") =>
                 setFilter(value)
               }
             >
@@ -157,7 +157,13 @@ export default function CarRecordTracker() {
                     <div className="text-sm text-gray-500 dark:text-gray-400 space-y-1">
                       <div className="flex items-center">
                         <Calendar className="mr-2 h-4 w-4" />
-                        {record.date}
+                        {new Date(record.date).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
                       <div className="flex items-center">
                         <DollarSign className="mr-2 h-4 w-4" />
@@ -166,7 +172,7 @@ export default function CarRecordTracker() {
                           currency: "USD",
                         })}
                       </div>
-                      <div>Type: {record.type}</div>
+                      <div>Transaction Type: {record.type}</div>
                       <div>Status: {record.status}</div>
                     </div>
                   </CardContent>
