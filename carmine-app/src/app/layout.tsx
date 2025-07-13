@@ -7,9 +7,6 @@ import CookieConsent from "@/components/user/UserPreferences";
 import { ContactWidget } from "@/components/contact-widget/ContactWidget";
 import "./globals.css";
 
-// At the top of your page.tsx or layout.tsx
-export const dynamic = "force-dynamic";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
