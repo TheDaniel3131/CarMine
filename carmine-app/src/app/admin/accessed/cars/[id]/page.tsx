@@ -21,7 +21,7 @@ import { useTheme } from "@/components/ThemeContext";
 export default function AdminRentCarPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
   const { darkMode } = useTheme();
@@ -42,13 +42,21 @@ export default function AdminRentCarPage({
   const [isFetching, setIsFetching] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState(0);
   const [currentImageUrl, setCurrentImageUrl] = React.useState("");
+  const [paramsId, setParamsId] = React.useState<string>("");
+
+  // Resolve params Promise
+  React.useEffect(() => {
+    params.then((resolvedParams) => {
+      setParamsId(resolvedParams.id);
+    });
+  }, [params]);
 
   // Load existing car data for edit mode
   React.useEffect(() => {
-    if (params.id !== "new") {
-      fetchCarDetails(params.id);
+    if (paramsId && paramsId !== "new") {
+      fetchCarDetails(paramsId);
     }
-  }, [params.id]);
+  }, [paramsId]);
 
   const fetchCarDetails = async (id: string) => {
     try {
@@ -209,7 +217,7 @@ export default function AdminRentCarPage({
     }
 
     // Check if an image is required (only for new cars)
-    if (params.id === "new" && !image) {
+    if (paramsId === "new" && !image) {
       validationErrors.push("At least one car photo is required");
     }
 
@@ -265,12 +273,12 @@ export default function AdminRentCarPage({
 
       // Make API request
       const endpoint =
-        params.id === "new"
+        paramsId === "new"
           ? "/api/admin/upload"
-          : `/api/admin/cars/${params.id}`;
+          : `/api/admin/cars/${paramsId}`;
 
       const response = await fetch(endpoint, {
-        method: params.id === "new" ? "POST" : "PUT",
+        method: paramsId === "new" ? "POST" : "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -283,7 +291,7 @@ export default function AdminRentCarPage({
       }
 
       toast.success(
-        params.id === "new"
+        paramsId === "new"
           ? "Car added successfully!"
           : "Car updated successfully!"
       );
@@ -321,14 +329,14 @@ export default function AdminRentCarPage({
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-bold">
-                    {params.id === "new"
+                    {paramsId === "new"
                       ? "Add Rentable Car"
                       : "Edit Rentable Car"}
                   </CardTitle>
                   <CardDescription
                     className={darkMode ? "text-gray-300" : "text-gray-600"}
                   >
-                    {params.id === "new"
+                    {paramsId === "new"
                       ? "Add a new car available for rent"
                       : "Edit car rental details"}
                   </CardDescription>
@@ -589,7 +597,7 @@ export default function AdminRentCarPage({
                   <FileText className="w-4 h-4 mr-2" />
                   {isSubmitting
                     ? "Saving Car..."
-                    : params.id === "new"
+                    : paramsId === "new"
                     ? "Add Car"
                     : "Update Car"}
                 </Button>
