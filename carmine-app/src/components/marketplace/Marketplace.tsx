@@ -23,20 +23,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+// import {
+//   Command,
+//   CommandGroup,
+//   CommandItem,
+//   CommandList,
+// } from "@/components/ui/command";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
 import { useAuth } from "@/components/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-
+import { useSearchParams } from "next/navigation";
 interface Car {
   id: string;
   make: string;
@@ -82,26 +82,30 @@ const categories: Category[] = [
 ];
 
 // Get all unique makes for search suggestions
-const allMakes = Array.from(
-  new Set(categories.flatMap((category) => category.makes))
-);
+// const allMakes = Array.from(
+//   new Set(categories.flatMap((category) => category.makes))
+// );
 
 export default function MarketplacePage() {
   const [darkMode, setDarkMode] = useState(false);
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
   const [selectedMake, setSelectedMake] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const [page, setPage] = useState(1);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
   const [isSearchDisabled, setIsSearchDisabled] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [sortOption, setSortOption] = useState<string>("newest");
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
 
   const toggleDarkMode = useCallback(() => {
     setDarkMode((prev) => !prev);
@@ -255,18 +259,18 @@ export default function MarketplacePage() {
   };
 
   // Update search suggestions when search term changes
-  useEffect(() => {
-    if (searchTerm && !isSearchDisabled) {
-      const suggestions = allMakes.filter((make) =>
-        make.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSearchSuggestions(suggestions);
-      setIsSearchOpen(true);
-    } else {
-      setSearchSuggestions([]);
-      setIsSearchOpen(false);
-    }
-  }, [searchTerm, isSearchDisabled]);
+  // useEffect(() => {
+  //   if (searchTerm && !isSearchDisabled) {
+  //     const suggestions = allMakes.filter((make) =>
+  //       make.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //     setSearchSuggestions(suggestions);
+  //     setIsSearchOpen(true);
+  //   } else {
+  //     setSearchSuggestions([]);
+  //     setIsSearchOpen(false);
+  //   }
+  // }, [searchTerm, isSearchDisabled]);
 
   useEffect(() => {
     let results = cars;
@@ -329,11 +333,11 @@ export default function MarketplacePage() {
     setSearchTerm("");
   }, []);
 
-  const handleSuggestionSelect = (suggestion: string) => {
-    setSearchTerm(suggestion);
-    setIsSearchOpen(false);
-    handleSearch();
-  };
+  // const handleSuggestionSelect = (suggestion: string) => {
+  //   setSearchTerm(suggestion);
+  //   setIsSearchOpen(false);
+  //   handleSearch();
+  // };
 
   const loadMore = useCallback(() => {
     setPage((prevPage) => prevPage + 1);
@@ -488,7 +492,7 @@ export default function MarketplacePage() {
               </Label>
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
                 <div className="relative w-full">
-                  <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                  {/* <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
                     <PopoverTrigger asChild>
                       <Input
                         id="search"
@@ -500,26 +504,17 @@ export default function MarketplacePage() {
                         }
                         value={searchTerm}
                         onChange={(e) => {
-                          setSearchTerm(e.target.value);
+                          const value = e.target.value;
+                          setSearchTerm(value);
                           if (!isSearchDisabled) {
-                            const searchParams = new URLSearchParams(
-                              window.location.search
-                            );
-                            searchParams.set("search", e.target.value);
-                            window.history.replaceState(
-                              null,
-                              "",
-                              `${
-                                window.location.pathname
-                              }?${searchParams.toString()}`
-                            );
+                            setIsSearchOpen(value.length >= 2); // only open if 2+ letters
                           }
                         }}
                         className="w-full bg-gray-100 dark:bg-gray-700"
                         disabled={isSearchDisabled}
                       />
                     </PopoverTrigger>
-                    {searchSuggestions.length > 0 && (
+                    {searchSuggestions.length > 0 && isSearchOpen && (
                       <PopoverContent className="w-full p-0">
                         <Command>
                           <CommandList>
@@ -539,7 +534,37 @@ export default function MarketplacePage() {
                         </Command>
                       </PopoverContent>
                     )}
-                  </Popover>
+                  </Popover> */}
+                  <Input
+                    id="search"
+                    type="text"
+                    placeholder={
+                      isSearchDisabled
+                        ? "Select category first..."
+                        : "Search cars..."
+                    }
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+
+                      // Still preserve query in URL if you want
+                      if (!isSearchDisabled) {
+                        const searchParams = new URLSearchParams(
+                          window.location.search
+                        );
+                        searchParams.set("search", e.target.value);
+                        window.history.replaceState(
+                          null,
+                          "",
+                          `${
+                            window.location.pathname
+                          }?${searchParams.toString()}`
+                        );
+                      }
+                    }}
+                    className="w-full bg-gray-100 dark:bg-gray-700"
+                    disabled={isSearchDisabled}
+                  />
                 </div>
 
                 <Select
