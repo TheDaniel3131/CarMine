@@ -1,8 +1,5 @@
 "use client";
 
-// At the top of your page.tsx or layout.tsx
-export const dynamic = "force-dynamic";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
