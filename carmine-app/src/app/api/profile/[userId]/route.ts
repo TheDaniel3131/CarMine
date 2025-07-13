@@ -6,9 +6,9 @@ const API_BASE_URL =
 // Correct way to define dynamic route handler in App Router
 export async function GET(
   request: Request,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { userId } = await context.params;
+  const { userId } = params;
 
   console.log(`Request URL: ${request.url}`);
   console.log(`Fetching car records for userId: ${userId}`);
