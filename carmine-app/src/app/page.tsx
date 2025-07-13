@@ -75,6 +75,7 @@ export default function CarMine() {
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         unreadMessages={unreadMessages}
+        onLogout={() => console.log("Logout clicked")}
       />
 
       <main className="container mx-auto px-4 py-20 md:py-24">

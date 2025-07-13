@@ -1,3 +1,4 @@
+// components/chat-widget/ChatWidget.tsx
 "use client";
 
 import { useChat } from "ai/react";
@@ -41,7 +42,6 @@ export function ChatWidget() {
     }
   }, [messages]);
 
-  // Close chat widget and stop any ongoing requests
   const closeChat = () => {
     stop();
     setIsOpen(false);
@@ -51,7 +51,7 @@ export function ChatWidget() {
     <>
       {/* Floating chat button */}
       <Button
-        className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0"
+        className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0 z-50"
         onClick={() => setIsOpen(true)}
       >
         <MessageCircle className="h-6 w-6" />
@@ -59,7 +59,7 @@ export function ChatWidget() {
 
       {/* Chat window */}
       {isOpen && (
-        <Card className="fixed bottom-4 right-4 w-[380px] h-[600px] flex flex-col">
+        <Card className="fixed bottom-4 right-4 w-[380px] h-[600px] flex flex-col z-50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
             <div>
               <h3 className="font-semibold">CarMine Support</h3>
@@ -75,7 +75,7 @@ export function ChatWidget() {
             </Button>
           </CardHeader>
           <CardContent className="p-4 flex-1">
-            <ScrollArea className="h-full pr-4" ref={scrollRef}>
+            <ScrollArea className="h-full pr-4" viewportRef={scrollRef}>
               {messages.length === 0 && (
                 <div className="text-sm text-muted-foreground text-center py-6">
                   👋 Hi! How can I help you today?
@@ -101,9 +101,9 @@ export function ChatWidget() {
               ))}
               {isLoading && (
                 <div className="flex items-center justify-start mb-4">
-                  <div className="bg-muted rounded-lg px-3 py-2">
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Thinking...
+                  <div className="bg-muted rounded-lg px-3 py-2 flex items-center space-x-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Thinking...</span>
                   </div>
                 </div>
               )}

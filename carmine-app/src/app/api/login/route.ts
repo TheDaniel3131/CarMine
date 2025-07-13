@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_BASE_API_URL || "http://localhost:5208";
 
-export const dynamic = "force-dynamic"; // Ensure the route is dynamic
+// export const dynamic = "force-dynamic"; // Ensure the route is dynamic
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();

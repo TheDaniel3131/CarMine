@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <ThemeProvider>
         <AuthProvider>
           <head>
@@ -39,7 +39,7 @@ export default function RootLayout({
             />
             <link rel="manifest" href="/site.webmanifest" />
           </head>
-          <body className={inter.className}>
+          <body className={inter.className} suppressHydrationWarning={true}>
             {children}
             <CookieConsent />
             <ChatWidget />
