@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, Menu, Sun, Moon, Inbox, LogOut, User } from "lucide-react";
+// import { Car, Menu, Sun, Moon, Inbox, LogOut, User } from "lucide-react";
+import { Car, Menu, Sun, Moon, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -129,7 +130,7 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
                 </Button>
               </Link>
             )}
-            {isAuthenticated && (
+            {/* {isAuthenticated && (
               <Link href="/inbox">
                 <Button
                   variant="ghost"
@@ -141,7 +142,7 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
                   <Inbox className="h-5 w-5" />
                 </Button>
               </Link>
-            )}
+            )} */}
             {isAuthenticated ? (
               <Button
                 variant="outline"

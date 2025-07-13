@@ -13,9 +13,9 @@ const pool = new Pool({
   max: 10, // Limit pool size for serverless
   idleTimeoutMillis: 30000, // Close idle connections after 30s
   connectionTimeoutMillis: 2000, // Fail if connection takes longer than 2s
-  ssl: {
-    rejectUnauthorized: false, // For self-signed certificates; set to true for production
-  },
+  // ssl: {
+  //   rejectUnauthorized: false, // For self-signed certificates; set to true for production
+  // },
 });
 export async function GET(request: Request) {
   const url = new URL(request.url);
