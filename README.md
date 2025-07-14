@@ -1,6 +1,6 @@
 # CarMine 🚗
 
-## **Disclaimer: This is for production testing & development purpose only!**
+## **Disclaimer: This is for local testing & development purpose only!**
 
 CarMine is a modern, cloud-based web application designed to enhance the automotive experience. Built using ASP.NET and integrated with AWS Cloud Services, CarMine helps users explore, buy, and manage vehicles efficiently. Whether you're a car dealership, buyer, or fleet manager, CarMine provides powerful tools and features to streamline vehicle management and decision-making.
 
