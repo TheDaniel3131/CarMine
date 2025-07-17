@@ -386,7 +386,7 @@ export default function MarketplacePage() {
         <p className="text-gray-600 dark:text-gray-300 mb-4">{car.trim}</p>
         <div className="flex justify-between items-center">
           <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-            ${car.price.toLocaleString()}
+            ${car.price}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {car.mileage > 0 ? `${car.mileage.toLocaleString()} miles` : "N/A"}
