@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid price" }, { status: 400 });
     }
 
-    const apiResponse = await fetch(`${API_BASE_URL}/api/sell`, {
+    const response = await fetch(`${API_BASE_URL}/api/sell`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -56,12 +56,12 @@ export async function POST(request: Request) {
       }),
     });
 
-    const result = await apiResponse.json();
+    const result = await response.json();
 
-    if (!apiResponse.ok) {
+    if (!response.ok) {
       return NextResponse.json(
         { error: result.error || "Failed to send car details" },
-        { status: apiResponse.status }
+        { status: response.status }
       );
     }
 
