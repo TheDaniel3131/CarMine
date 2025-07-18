@@ -120,6 +120,12 @@ export default function SellPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      alert("User not logged in.");
+      return;
+    }
     // Reset error message
     setErrorMessage("");
 
@@ -179,10 +185,10 @@ export default function SellPage() {
       validationErrors.push("Description must not be empty");
     }
 
-    // Check if an image is uploaded
-    if (!image) {
-      validationErrors.push("At least one car photo is required");
-    }
+    // Check if an image is uploaded (Optional)
+    // if (!image) {
+    //   validationErrors.push("At least one car photo is required");
+    // }
 
     // If there are validation errors, display them and stop submission
     if (validationErrors.length > 0) {
@@ -226,6 +232,7 @@ export default function SellPage() {
 
       // Create form data with S3 image key instead of file
       const carData = {
+        user_id: parseInt(userId),
         car_make: make.trim(),
         car_model: model.trim(),
         car_year: year.trim(),

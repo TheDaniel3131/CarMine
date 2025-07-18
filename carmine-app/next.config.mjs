@@ -13,6 +13,7 @@ const nextConfig = {
       "carmine-listings.s3.us-east-1.amazonaws.com",
       "content.homenetiol.com",
       "placehold.co",
+      "images.dealersync.com",
     ],
     remotePatterns: [
       {
@@ -26,6 +27,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "www.motorcarmarkdown.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.dealersync.com"
       },
       {
         protocol: "http",

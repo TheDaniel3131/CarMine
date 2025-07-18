@@ -27,6 +27,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible2, setPasswordVisible2] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -172,7 +173,7 @@ export default function SignUpPage() {
                     <div className="relative">
                       <Input
                         id="confirm-password"
-                        type="password"
+                        type={passwordVisible2 ? "text" : "password"}
                         placeholder="Confirm your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -184,9 +185,9 @@ export default function SignUpPage() {
                       <button
                         type="button"
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 focus:outline-none"
-                        onClick={() => setPasswordVisible(!passwordVisible)}
+                        onClick={() => setPasswordVisible2(!passwordVisible2)}
                       >
-                        {passwordVisible ? (
+                        {passwordVisible2 ? (
                           <EyeOff className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         ) : (
                           <Eye className="w-5 h-5 text-gray-500 dark:text-gray-400" />

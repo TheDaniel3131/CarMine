@@ -15,6 +15,7 @@ export interface FooterProps {
 export interface AuthContextType {
   isAuthenticated: boolean;
   userEmail: string | null;
+  userId: string | null;
   login: (email: string, token?: string) => void;
   logout: () => void;
   loading: boolean;

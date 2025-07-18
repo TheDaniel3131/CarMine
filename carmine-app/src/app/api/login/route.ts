@@ -24,6 +24,7 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     // Handle responses from the ASP.NET Core Web API
@@ -36,9 +37,10 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
+    const { userId, message } = data;
 
     // Return the response from ASP.NET Core back to the client
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ userId, message }, { status: 200 });
   } catch (error) {
     console.error("Error during login:", error);
     return NextResponse.json(

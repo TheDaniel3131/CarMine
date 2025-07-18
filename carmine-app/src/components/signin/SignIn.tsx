@@ -22,7 +22,7 @@ import { Eye, EyeOff } from "lucide-react"; // Ensure you have lucide-react inst
 export default function SigninPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [unreadMessages] = useState(2);
-
+  // const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -45,9 +45,11 @@ export default function SigninPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // const storedUserId = window.localStorage.getItem("userId");
       const storedEmail = window.localStorage.getItem("userEmail");
       const storedPassword = window.localStorage.getItem("userPassword");
       if (storedEmail && storedPassword) {
+        // setUserId(storedUserId ?? "");
         setEmail(storedEmail);
         setPassword(storedPassword);
         setRememberMe(true);
@@ -56,6 +58,7 @@ export default function SigninPage() {
           hasPassword: !!storedPassword,
         });
       } else {
+        // setUserId("");
         setEmail("");
         setPassword("");
         setRememberMe(false);
@@ -95,12 +98,19 @@ export default function SigninPage() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Login successful:", data);
-
+        const userId = data.userId || ""; // Ensure userId is defined
+        console.log("User ID received:", data.userId);
+        localStorage.setItem("userId", data.userId);
+        if (userId) {
+          localStorage.setItem("userId", userId);
+          console.log("User ID saved to localStorage:", userId);
+        }
         if (rememberMe) {
+          saveToLocalStorage("userId", userId);
           saveToLocalStorage("userEmail", email);
           saveToLocalStorage("userPassword", password);
           console.log("Saved credentials to localStorage");
+          console.log("Stored userId:", userId);
         } else {
           // Clear stored credentials if remember me is unchecked
           window.localStorage.removeItem("userEmail");
@@ -127,7 +137,6 @@ export default function SigninPage() {
         unreadMessages={unreadMessages}
         onLogout={() => {
           console.log("Logout clicked");
-          // Implement logout functionality here
         }}
       />
       <section className="container mx-auto px-4 py-20 md:py-24 bg-gray-100 dark:bg-gray-900">

@@ -20,6 +20,7 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
   const [progress, setProgress] = useState(0);
   const [isToggling, setIsToggling] = useState(false);
   const { isAuthenticated, logout } = useAuth();
+  const [userId, setUserId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -41,6 +42,15 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
     };
   }, [isToggling]);
 
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      console.log("Fetched userId from localStorage:", storedUserId);
+      console.log(`Welcome back, ${userId}!`);
+      setUserId(storedUserId); // or use it directly
+    }
+  }, [userId]);
+
   const handleToggleDarkMode = () => {
     setProgress(0);
     setIsToggling(true);
@@ -53,6 +63,12 @@ export default function Header({ darkMode, toggleDarkMode }: HeaderProps) {
 
   const handleLogout = () => {
     logout();
+    setProgress(0);
+    setIsToggling(false);
+    localStorage.remove("userId");
+    localStorage.remove("userEmail");
+    localStorage.remove("userPassword");
+    sessionStorage.removeItem("sessionEmail");
     router.push("/");
   };
 
