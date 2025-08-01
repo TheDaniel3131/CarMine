@@ -279,9 +279,9 @@ export default function MarketplacePage() {
       const searchLower = searchTerm.toLowerCase();
       results = results.filter(
         (car) =>
-          car.make.toLowerCase().includes(searchLower) ||
-          car.model.toLowerCase().includes(searchLower) ||
-          car.trim.toLowerCase().includes(searchLower)
+          (car.make && car.make.toLowerCase().includes(searchLower)) ||
+          (car.model && car.model.toLowerCase().includes(searchLower)) ||
+          (car.trim && car.trim.toLowerCase().includes(searchLower))
       );
     }
 
