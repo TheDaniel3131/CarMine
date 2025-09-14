@@ -9,6 +9,7 @@ export async function GET() {
     const response = await fetch(`${API_BASE_URL}/api/buy`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      mode: "cors",
     });
 
     if (!response.ok) {

@@ -104,3 +104,4 @@ jspm_packages/
 
 # upload files are not tracked
 /uploads
+public/uploads/

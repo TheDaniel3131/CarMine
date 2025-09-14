@@ -56,8 +56,6 @@ interface Category {
   makes: string[];
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-
 const categories: Category[] = [
   {
     name: "Luxury",
@@ -124,7 +122,7 @@ export default function MarketplacePage() {
   const fetchCars = useCallback(async () => {
     try {
       setLoading(true);
-      let apiUrl = `https://auto.dev/api/listings?apikey=${API_KEY}&page=${page}&limit=30`;
+      let apiUrl = `/api/car-listings?page=${page}&limit=30&sort=${sortOption}`;
 
       if (selectedMake) {
         apiUrl += `&make=${selectedMake}`;
@@ -353,10 +351,7 @@ export default function MarketplacePage() {
 
   // Modify the car card to show rentable status if available
   const renderCarCard = (car: Car) => (
-    <div
-      key={car.id}
-      className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105">
       <div className="relative w-full h-48">
         <Image
           src={getImageUrl(car)}
@@ -633,7 +628,9 @@ export default function MarketplacePage() {
 
             {filteredCars.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCars.map((car) => renderCarCard(car))}
+                {filteredCars.map((car) => (
+                  <div key={car.id}>{renderCarCard(car)}</div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-12">
